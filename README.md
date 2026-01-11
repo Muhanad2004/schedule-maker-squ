@@ -1,16 +1,52 @@
-# React + Vite
+# SQU Schedule Maker 📅
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, fast, and user-friendly schedule maker for Sultan Qaboos University students. Built with React and Vite.
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Course Selection**: Easily search and add courses to your list.
+- **Smart Scheduling**: Automatically generates all possible conflict-free schedules based on your selected courses.
+- **Advanced Filtering**:
+  - **Instructor Filtering**: Pick your preferred instructors or exclude ones you want to avoid.
+  - **Time Blocking**: Click on the time grid to block specific days or hours (e.g., "No classes on Sunday" or "Free time Tuesday morning").
+- **Dark/Light Mode**: Toggle between a sleek dark mode (default) and a clean light mode. Your preference is saved automatically.
+- **Exam Schedule**: View exam dates and times for your selected courses at a glance.
+- **Responsive Design**: Works great on desktop, tablet, and mobile devices.
 
-## React Compiler
+## 🚀 Live Demo
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Check out the live version here: [https://Muhanad2004.github.io/schedule-maker-squ/](https://Muhanad2004.github.io/schedule-maker-squ/)
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **Framework**: [React](https://react.dev/) + [Vite](https://vitejs.dev/)
+- **Styling**: Standard CSS with CSS Variables for theming.
+- **Icons**: Custom SVG icons.
+- **Deployment**: GitHub Pages.
+
+## 🏃‍♂️ Running Locally
+
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/Muhanad2004/schedule-maker-squ.git
+    cd schedule-maker-squ
+    ```
+
+2.  **Install dependencies**
+    ```bash
+    npm install
+    ```
+
+3.  **Start the development server**
+    ```bash
+    npm run dev
+    ```
+
+4.  **Build for production**
+    ```bash
+    npm run build
+    ```
+
+## 📝 License
+
+This project is open source and available for personal use.
