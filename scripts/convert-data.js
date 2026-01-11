@@ -10,7 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const RAW_DATA_DIR = path.join(__dirname, '../raw-data');
-const OUTPUT_FILE = path.join(__dirname, '../src/data/courses.json');
+const OUTPUT_FILE = path.join(__dirname, '../public/data.json');
 
 function convertData() {
     if (!fs.existsSync(RAW_DATA_DIR)) {
@@ -19,7 +19,7 @@ function convertData() {
     }
 
     const files = fs.readdirSync(RAW_DATA_DIR).filter(file => file.endsWith('.xls') || file.endsWith('.xlsx'));
-    
+
     if (files.length === 0) {
         console.warn('No Excel files found in raw-data directory.');
         return;
@@ -81,7 +81,7 @@ function convertData() {
             const day = String(row[columnIndices.day] || '').trim();
             const from = String(row[columnIndices.from] || '').trim();
             const to = String(row[columnIndices.to] || '').trim();
-            
+
             // Combine into unified time string e.g. "Sun 08:00-09:00"
             // Note: Data might be "U R" or "Sun Tue" or "U" etc.
             // We just concat them for now, assuming scheduler parses correctly.
@@ -110,7 +110,7 @@ function processCourses(flatData) {
 
     flatData.forEach(row => {
         const { code, name, section, instructor, time, room, exam } = row;
-        
+
         if (!coursesMap[code]) {
             coursesMap[code] = {
                 id: code,
@@ -121,11 +121,11 @@ function processCourses(flatData) {
         }
 
         const course = coursesMap[code];
-        
+
         // If section already exists, append time.
         // Assuming instructor/room might be same or different, we can append or ignore.
         // For SQU, usually same instructor, maybe different room.
-        
+
         if (!course.sectionsMap[section]) {
             course.sectionsMap[section] = {
                 section,
@@ -150,10 +150,10 @@ function processCourses(flatData) {
                 if (existing.instructor.toUpperCase().includes('TO BE ANNOUNCED') || existing.instructor === '') {
                     existing.instructor = instructor;
                 } else {
-                     // Check if it's already a substring to avoid "Smith & Smith"
-                     if (!existing.instructor.includes(instructor)) {
-                         existing.instructor += ` & ${instructor}`;
-                     }
+                    // Check if it's already a substring to avoid "Smith & Smith"
+                    if (!existing.instructor.includes(instructor)) {
+                        existing.instructor += ` & ${instructor}`;
+                    }
                 }
             }
         }
