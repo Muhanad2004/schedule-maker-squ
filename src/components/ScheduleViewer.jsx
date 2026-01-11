@@ -35,15 +35,25 @@ export default function ScheduleViewer({
 
   const handleDownload = useCallback(async () => {
     if (!scheduleRef.current) return;
+
+    // Add export class for clean B&W look
+    scheduleRef.current.classList.add('export-mode');
+
     try {
       const html2canvas = (await import('html2canvas')).default;
-      const canvas = await html2canvas(scheduleRef.current, { backgroundColor: '#fff' });
+      const canvas = await html2canvas(scheduleRef.current, {
+        backgroundColor: '#ffffff',
+        scale: 2 // Improve quality
+      });
       const link = document.createElement('a');
       link.download = `schedule-${scheduleIndex + 1}.png`;
       link.href = canvas.toDataURL();
       link.click();
     } catch (error) {
       console.error('Download failed:', error);
+    } finally {
+      // Remove export class
+      scheduleRef.current.classList.remove('export-mode');
     }
   }, [scheduleIndex]);
 

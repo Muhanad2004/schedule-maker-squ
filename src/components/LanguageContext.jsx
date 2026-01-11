@@ -26,39 +26,43 @@ const translations = {
         noSchedulesFound: 'No valid schedules found with current filters.',
         confirmClearCourses: 'Clear all selected courses?',
         confirmResetFilters: 'Reset all time filters?',
-        days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu']
+        days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu'],
+        filterHint: 'Click on a day header to block the whole day, or click specific hours to block them.',
+        welcomeMessage: 'Welcome! Search for courses on the left to get started.'
     },
     ar: {
-        searchPlaceholder: 'ابحث عن المقررات...',
-        tabs: { all: 'جميع المقررات', selected: 'المحددة' },
-        emptySearchPrompt: 'ابدأ الكتابة للبحث...',
-        noMatchesFound: 'لا توجد نتائج.',
-        noCoursesSelected: 'لم يتم تحديد أي مقررات.',
-        instructorTimesLabel: 'المدرسون',
+        searchPlaceholder: 'ابحث عن المقررات (مثال: COMP3000)...',
+        tabs: { all: 'جميع المقررات', selected: 'المقررات المحددة' },
+        emptySearchPrompt: 'ابدأ بكتابة رمز المقرر أو اسمه للبحث...',
+        noMatchesFound: 'لا توجد نتائج مطابقة.',
+        noCoursesSelected: 'لم يتم اختيار أي مقررات بعد. ابحث وأضف مقررات لإنشاء الجداول.',
+        instructorTimesLabel: 'أوقات المدرسين',
         remove: 'إزالة',
-        filterTitle: 'فلاتر الوقت',
+        filterTitle: 'تحديد الأوقات غير المناسبة',
         resetFilters: 'إعادة تعيين',
-        generate: 'إنشاء',
-        processing: 'جاري المعالجة...',
-        schedule: 'الجدول',
+        generate: 'إنشاء الجداول',
+        processing: 'جاري إنشاء الجداول...',
+        schedule: 'الجدول رقم',
         of: 'من',
-        noSchedules: 'لا توجد جداول متاحة. حاول تغيير الفلاتر.',
-        saveImage: 'حفظ كصورة',
-        examFooter: 'مواعيد الاختبارات',
-        loadingCourses: 'جاري تحميل المقررات...',
-        noSchedulesFound: 'لا توجد جداول متاحة.',
-        confirmClearCourses: 'مسح جميع المقررات المحددة؟',
+        noSchedules: 'لم يتم العثور على جداول مناسبة. يرجى محاولة: 1. إزالة بعض فلاتر الوقت. 2. تغيير المدرسين المختارين.',
+        saveImage: 'حفظ الجدول كصورة',
+        examFooter: 'مواعيد الاختبارات النهائية',
+        loadingCourses: 'جاري تحميل بيانات المقررات...',
+        noSchedulesFound: 'لا توجد جداول تتوافق مع الفلاتر الحالية.',
+        confirmClearCourses: 'هل أنت متأكد من إزالة جميع المقررات؟',
         confirmResetFilters: 'إعادة تعيين جميع الفلاتر؟',
-        days: ['أحد', 'إثنين', 'ثلاثاء', 'أربعاء', 'خميس']
+        days: ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس'],
+        filterHint: 'اضغط على رأس العمود لحظر يوم كامل، أو اضغط على ساعات محددة لحظرها.',
+        welcomeMessage: 'مرحباً! ابدأ بالبحث عن المقررات في القائمة الجانبية.'
     }
 };
 
 export function LanguageProvider({ children }) {
     const [lang, setLang] = useState(() => {
         try {
-            return localStorage.getItem('lang') || 'en';
+            return localStorage.getItem('lang') || 'ar';
         } catch {
-            return 'en';
+            return 'ar';
         }
     });
 

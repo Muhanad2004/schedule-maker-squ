@@ -8,7 +8,7 @@
 /* === Theme Variables === */
 :root {
   /* Light Theme (Default): Sand & Stone */
-  --bg: #F2EBE5;
+  --bg: #EAE0D5;
   /* Derived from #D3C3B9 (Lighter) */
   --card: #FFFFFF;
   --card-border: #E5E7EB;
@@ -646,11 +646,10 @@ input {
   display: grid;
   grid-template-columns: 70px repeat(5, 1fr);
   gap: 4px;
-  position: sticky;
-  top: 0;
-  z-index: 50;
+  /* position: sticky; removed per user request */
+  /* top: 0; */
+  /* z-index: 50; */
   background: var(--bg);
-  /* Prevent see-through when scrolling */
   padding-bottom: 4px;
 }
 
@@ -789,4 +788,32 @@ input {
   .main-content {
     min-height: 500px;
   }
+}
+
+/* === Export Mode === */
+.export-mode {
+  background: white !important;
+  color: black !important;
+  border: 1px solid #000 !important;
+}
+
+.export-mode .calendar-header-row,
+.export-mode .day-column,
+.export-mode .time-slot,
+.export-mode .day-header {
+  background: white !important;
+  color: black !important;
+  box-shadow: none !important;
+  border-color: #000 !important;
+}
+
+.export-mode .course-block {
+  border: 1px solid #000 !important;
+  color: black !important;
+  background: white !important;
+  box-shadow: none !important;
+}
+
+.export-mode .hour-line {
+  background: #ccc !important;
 }

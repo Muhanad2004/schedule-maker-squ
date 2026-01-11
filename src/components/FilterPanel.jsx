@@ -17,7 +17,7 @@ export default function FilterPanel({ blockedSlots, onToggleSlot, onToggleDay, o
       {expanded && (
         <div className="filter-content">
           <div className="filter-header">
-            <span className="filter-hint">Click to block times</span>
+            <span className="filter-hint">{t.filterHint}</span>
             <button className="reset-btn" onClick={onReset}>
               {t.resetFilters}
             </button>
