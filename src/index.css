@@ -53,33 +53,33 @@
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Light Theme - Fresh Green (Nature/Growth) */
+/* Light Theme - Clean Nature (Refined) */
 [data-theme="light"] {
-  --bg: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  --bg: linear-gradient(135deg, #f0fdf4 0%, #d1fae5 100%);
   --bg-solid: #f0fdf4;
-  --card: rgba(255, 255, 255, 0.9);
-  --card-border: rgba(34, 197, 94, 0.15);
-  --border: #bbbfcc;
+  --card: rgba(255, 255, 255, 0.95);
+  --card-border: rgba(34, 197, 94, 0.2);
+  --border: #d1d5db;
   --hover: rgba(34, 197, 94, 0.08);
 
-  --text: #052e16;
-  --text-dim: #166534;
+  --text: #064e3b;
+  /* Green 900 */
+  --text-dim: #059669;
+  /* Green 600 */
   --text-dark: #ffffff;
 
-  --primary: #15803d;
-  /* Green 700 */
-  --primary-hover: #166534;
-  /* Green 800 */
-  --primary-bg: rgba(21, 128, 61, 0.1);
+  --primary: #10b981;
+  /* Emerald 500 */
+  --primary-hover: #059669;
+  /* Emerald 600 */
+  --primary-bg: rgba(16, 185, 129, 0.1);
 
-  --secondary: #0f766e;
-  /* Teal 700 */
-  --accent: #ca8a04;
-  /* Yellow 700 */
+  --secondary: #0d9488;
+  --accent: #d97706;
 
-  --header-gradient: linear-gradient(135deg, #15803d 0%, #0f766e 100%);
+  --header-gradient: linear-gradient(135deg, #10b981 0%, #0d9488 100%);
 
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.08);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
 }
@@ -286,36 +286,76 @@ body.font-arabic {
 }
 
 /* === Buttons === */
-button {
-  cursor: pointer;
-  border: 1px solid transparent;
-  background: var(--card);
-  color: var(--text);
-  border-radius: var(--radius);
+/* === Button System (Bootstrap-like) === */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
   font-size: 0.875rem;
   font-weight: 600;
-  transition: all 0.2s ease;
+  line-height: 1.5;
+  border-radius: var(--radius);
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  border: 1px solid transparent;
+  text-decoration: none;
+  gap: 0.5rem;
+  background-color: var(--card);
+  /* Fallback */
+  color: var(--text);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .btn-primary {
-  background: var(--primary);
-  color: #fff;
-  padding: 0.6rem 1.25rem;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  letter-spacing: 0.02em;
+  background-color: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-primary:hover {
-  background: var(--primary-hover);
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-lg), 0 0 15px var(--primary);
+  box-shadow: var(--shadow);
 }
 
-.btn-primary:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
+.btn-outline {
+  background-color: transparent;
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.btn-outline:hover {
+  background-color: var(--hover);
+  border-color: var(--text-dim);
+}
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: var(--radius);
+  background-color: var(--card);
+  /* Explicit bg */
+  border: 1px solid var(--border);
+  color: var(--text);
+  display: flex;
+  /* Ensure center */
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon:hover {
+  background-color: var(--primary);
+  color: white;
+  border-color: var(--primary);
 }
 
 /* === Course Selector === */
@@ -705,23 +745,49 @@ button {
 
 .schedule-controls {
   display: flex;
-  gap: 10px;
+  gap: 0.5rem;
+  align-items: center;
 }
 
 .schedule-controls button {
-  padding: 0.5rem 1rem;
-  background: var(--border);
+  /* Use explicit styles to override any defaults */
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--card);
   color: var(--text);
-  border: 1px solid transparent;
-  white-space: nowrap;
-  /* Prevent text wrapping */
-  min-width: fit-content;
-  /* Ensure button doesn't collapse */
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 1.1rem;
+  transition: all 0.2s;
+  cursor: pointer;
 }
 
-.schedule-controls button:hover {
-  background: var(--hover);
-  border-color: var(--text-dim);
+.schedule-controls button:hover:not(:disabled) {
+  background-color: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.schedule-controls button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: var(--bg);
+}
+
+.schedule-controls .download-btn {
+  color: var(--primary);
+  border-color: var(--primary);
+  background: var(--primary-bg);
+}
+
+.schedule-controls .download-btn:hover {
+  background: var(--primary);
+  color: white;
 }
 
 .schedule-calendar {

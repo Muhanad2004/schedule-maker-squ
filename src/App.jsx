@@ -47,10 +47,35 @@ export default function App() {
 
     // Load courses on mount
     useEffect(() => {
-      loadCourses().then(data => {
-        setAllCourses(data);
-        setLoading(false);
-      });
+      let isMounted = true;
+      const startTime = Date.now();
+
+      const loadData = async () => {
+        setLoading(true);
+        try {
+          const response = await fetch('./data.json');
+          if (!response.ok) throw new Error('Failed to load data');
+          const jsonData = await response.json();
+
+          // Ensure minimum 2 seconds loading for the "cool" effect
+          const elapsedTime = Date.now() - startTime;
+          const remainingTime = Math.max(0, 2000 - elapsedTime);
+
+          await new Promise(resolve => setTimeout(resolve, remainingTime));
+
+          if (isMounted) {
+            setAllCourses(jsonData);
+            setLoading(false);
+          }
+        } catch (err) {
+          console.error("Error loading data:", err);
+          if (isMounted) setLoading(false);
+        }
+      };
+
+      loadData();
+
+      return () => { isMounted = false; };
     }, []);
 
     // Persist state

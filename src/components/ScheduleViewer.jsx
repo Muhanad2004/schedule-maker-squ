@@ -1,5 +1,4 @@
 import { useMemo, useRef, useCallback, useState } from 'react';
-import html2canvas from 'html2canvas';
 import { formatTime } from '../utils/timeUtils';
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu'];
@@ -70,12 +69,19 @@ export default function ScheduleViewer({
   const handleDownload = useCallback(async () => {
     if (!scheduleRef.current) return;
 
-    html2canvas(scheduleRef.current, { backgroundColor: null }).then(canvas => {
+    // Lazy load html2canvas only when needed
+    try {
+      const html2canvasModule = await import('html2canvas');
+      const html2canvas = html2canvasModule.default;
+
+      const canvas = await html2canvas(scheduleRef.current, { backgroundColor: null });
       const link = document.createElement('a');
       link.download = `schedule-${scheduleIndex + 1}.png`;
       link.href = canvas.toDataURL();
       link.click();
-    });
+    } catch (error) {
+      console.error('Failed to load html2canvas or generate image:', error);
+    }
   }, [scheduleIndex]);
 
   // Process blocks
