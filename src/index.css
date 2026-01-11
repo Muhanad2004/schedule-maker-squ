@@ -641,38 +641,39 @@ input {
 
 .calendar-container {
   min-width: 650px;
+  border: 1px solid var(--card-border);
 }
 
 .calendar-header-row {
   display: grid;
   grid-template-columns: 70px repeat(5, 1fr);
-  gap: 4px;
-  /* position: sticky; removed per user request */
-  /* top: 0; */
-  /* z-index: 50; */
-  background: var(--bg);
-  padding-bottom: 4px;
+  gap: 1px;
+  background: var(--card-border);
+  border-bottom: 1px solid var(--card-border);
 }
 
 .day-header {
   text-align: center;
   font-weight: 600;
   padding: 0.5rem;
-  background: var(--primary-bg);
-  color: var(--primary);
-  border-radius: 6px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  background: var(--card);
+  /* Flat header background */
+  color: var(--text);
+  /* No border radius for table look */
 }
 
 .calendar-body {
   display: grid;
   grid-template-columns: 70px repeat(5, 1fr);
-  gap: 4px;
+  background: var(--card-border);
+  /* Grid lines */
+  gap: 1px;
 }
 
 .time-gutter {
   display: flex;
   flex-direction: column;
+  background: var(--bg);
 }
 
 .time-slot {
@@ -681,12 +682,14 @@ input {
   text-align: right;
   padding-right: 8px;
   padding-top: 2px;
+  background: var(--card);
+  /* Match cells or distinct */
+  border-bottom: 1px solid var(--card-border);
 }
 
 .day-column {
   position: relative;
   background: var(--bg);
-  border-radius: 4px;
 }
 
 .hour-line {
@@ -695,19 +698,23 @@ input {
   right: 0;
   height: 1px;
   background: var(--card-border);
+  opacity: 0.3;
+  /* Subtle guides */
 }
 
 .course-block {
   position: absolute;
-  left: 2px;
-  right: 2px;
-  border-radius: 6px;
+  left: 0;
+  /* Full fill */
+  right: 0;
+  border-radius: 0;
+  /* Sharp corners */
   padding: 4px 6px;
   color: white;
   font-size: 0.7rem;
   overflow: hidden;
-  border-left: 4px solid;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid rgba(0, 0, 0, 0.2);
+  box-shadow: none;
   z-index: 10;
   display: flex;
   flex-direction: column;
@@ -762,8 +769,10 @@ input {
   gap: 0.5rem;
   padding: 0.5rem 0.75rem;
   background: var(--bg);
-  border-radius: 6px;
-  border-left: 3px solid;
+  border-radius: 0;
+  /* Sharp */
+  border: 1px solid var(--card-border);
+  border-left-width: 4px;
   font-size: 0.85rem;
 }
 
