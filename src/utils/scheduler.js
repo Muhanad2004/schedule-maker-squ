@@ -8,7 +8,7 @@ function isOverlapping(t1, t2) {
     // Assuming 24h format converted to minutes or similar, or string comparison if standard ISO
     // Let's assume input comes as "HH:MM" strings. We need to parse them.
     // Actually, let's helper function to parse time first.
-    
+
     // Simplification: We will assume the passed Objects already have parsed start/end in minutes.
     return Math.max(t1.start, t2.start) < Math.min(t1.end, t2.end);
 }
@@ -27,48 +27,43 @@ function parseTime(timeStr) {
  * Format examples: "Sun 10:00-11:50", "Mon,Wed 14:00-15:15"
  * This function needs to be robust.
  */
-function parseTimeSlots(timeString) {
+const DAYS_MAP = {
+    'sun': 0, 'u': 0, 'sunday': 0,
+    'mon': 1, 'm': 1, 'monday': 1,
+    'tue': 2, 't': 2, 'tuesday': 2,
+    'wed': 3, 'w': 3, 'wednesday': 3,
+    'thu': 4, 'r': 4, 'thursday': 4,
+    'fri': 5, 'f': 5, 'friday': 5,
+    'sat': 6, 's': 6, 'saturday': 6
+};
+
+const TIME_REGEX = /(\d{1,2}:\d{2}(?::\d{2})?)\s*-\s*(\d{1,2}:\d{2}(?::\d{2})?)/;
+
+export function parseTimeSlots(timeString) {
     if (!timeString) return [];
-    
-    // timeString might be "SUN 12:00-13:00 | TUE 12:00-13:00"
-    
+
     const slots = [];
-    
-    // Split by the delimiter we added in convert-data
     const parts = timeString.split('|');
 
-    const daysMap = {
-        'sun': 0, 'u': 0, 'sunday': 0,
-        'mon': 1, 'm': 1, 'monday': 1,
-        'tue': 2, 't': 2, 'tuesday': 2,
-        'wed': 3, 'w': 3, 'wednesday': 3,
-        'thu': 4, 'r': 4, 'thursday': 4,
-        'fri': 5, 'f': 5, 'friday': 5,
-        'sat': 6, 's': 6, 'saturday': 6
-    };
-    
-    // Regex for time range
-    const timeRegex = /(\d{1,2}:\d{2}(?::\d{2})?)\s*-\s*(\d{1,2}:\d{2}(?::\d{2})?)/;
-
-    parts.forEach(part => {
+    for (const part of parts) {
         const lower = part.toLowerCase();
-        const timeMatch = lower.match(timeRegex);
-        
+        const timeMatch = lower.match(TIME_REGEX);
+
         if (timeMatch) {
             const start = parseTime(timeMatch[1]);
             const end = parseTime(timeMatch[2]);
-            
+
             // Extract days from this specific part
-            const nonTimePart = lower.replace(timeRegex, '');
+            const nonTimePart = lower.replace(TIME_REGEX, '');
             const tokens = nonTimePart.split(/[^a-z]+/).filter(Boolean);
 
-            tokens.forEach(token => {
-                if (daysMap.hasOwnProperty(token)) {
-                    slots.push({ day: daysMap[token], start, end });
+            for (const token of tokens) {
+                if (DAYS_MAP.hasOwnProperty(token)) {
+                    slots.push({ day: DAYS_MAP[token], start, end });
                 }
-            });
+            }
         }
-    });
+    }
 
     return slots;
 }
@@ -82,12 +77,12 @@ function hasConflict(section, currentSchedule) {
     // section.time is the raw string, we need to parse it or have it pre-parsed.
     // For performance, pre-parsing in dataLoader or convert-data is better.
     // But let's do it on fly or assume pre-parsed 'parsedSlots'.
-    
+
     const newSlots = section.parsedSlots || parseTimeSlots(section.time || "");
 
     for (const scheduledSection of currentSchedule) {
         const existingSlots = scheduledSection.parsedSlots || parseTimeSlots(scheduledSection.time || "");
-        
+
         for (const s1 of newSlots) {
             for (const s2 of existingSlots) {
                 if (isOverlapping(s1, s2)) return true;
@@ -104,7 +99,7 @@ function hasConflict(section, currentSchedule) {
  */
 export function generateSchedules(selectedCourses) {
     const results = [];
-    
+
     // Optimization: Sort courses by number of sections (fewest options first)
     const sortedCourses = [...selectedCourses].sort((a, b) => a.sections.length - b.sections.length);
 
@@ -115,7 +110,7 @@ export function generateSchedules(selectedCourses) {
         }
 
         const course = sortedCourses[courseIndex];
-        
+
         for (const section of course.sections) {
             // Lazy parsing if not already done
             if (!section.parsedSlots) {
@@ -125,10 +120,10 @@ export function generateSchedules(selectedCourses) {
             if (!hasConflict(section, currentSchedule)) {
                 // Enrich section with course info so UI can display it
                 // We create a new object to avoid mutating the original data endlessly if we rerun 
-                const enrichedSection = { 
-                    ...section, 
-                    code: course.code, 
-                    name: course.name 
+                const enrichedSection = {
+                    ...section,
+                    code: course.code,
+                    name: course.name
                 };
                 currentSchedule.push(enrichedSection);
                 backtrack(courseIndex + 1, currentSchedule);

@@ -412,29 +412,30 @@ body.font-arabic {
 }
 
 /* Specific overrides for tab buttons to prevent "white box" look */
-.selector-tabs .tab-btn {
+/* Using high specificity to override global button styles without !important */
+#root .selector-tabs .tab-btn {
   flex: 1;
   padding: 0.75rem;
-  background: transparent !important;
-  color: var(--text-dim) !important;
-  border: none !important;
-  border-bottom: 2px solid transparent !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
+  background: transparent;
+  color: var(--text-dim);
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  box-shadow: none;
   font-weight: 500;
   cursor: pointer;
   text-align: center;
 }
 
-.selector-tabs .tab-btn.active {
-  color: var(--text) !important;
-  border-bottom-color: var(--primary) !important;
-  background: linear-gradient(to top, var(--primary-bg), transparent) !important;
+#root .selector-tabs .tab-btn.active {
+  color: var(--text);
+  border-bottom-color: var(--primary);
+  background: linear-gradient(to top, var(--primary-bg), transparent);
 }
 
-.selector-tabs .tab-btn:hover {
-  background: var(--hover) !important;
-  color: var(--text) !important;
+#root .selector-tabs .tab-btn:hover {
+  background: var(--hover);
+  color: var(--text);
 }
 
 .selector-content {

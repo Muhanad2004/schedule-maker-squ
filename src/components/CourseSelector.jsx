@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { getInstructorScheduleSummary } from '../utils/timeUtils';
 
 export default function CourseSelector({
@@ -11,17 +11,38 @@ export default function CourseSelector({
   t
 }) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedTerm, setDebouncedTerm] = useState('');
   const [activeTab, setActiveTab] = useState('all');
 
+  // Debounce search input
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     setDebouncedTerm(searchTerm);
+  //   }, 300); // 300ms delay
+  //   return () => clearTimeout(timer);
+  // }, [searchTerm]);
+  // Actually, for simplicity and immediate feedback on small datasets, 
+  // we might keep it instant but let's stick to "fits like a glove".
+  // On second thought, React 18 automatic batching handles this well often.
+  // But let's add it for strict performance "glove fit".
+
+  // Actually, I can't easily insert hooks without changing the function body structure significantly 
+  // if I try to be too clever. Let's just do the useEffect.
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedTerm(searchTerm), 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
   const filteredCourses = useMemo(() => {
-    if (!searchTerm.trim()) return [];
-    const terms = searchTerm.toLowerCase().split(/\s+/).filter(Boolean);
+    if (!debouncedTerm.trim()) return [];
+    const terms = debouncedTerm.toLowerCase().split(/\s+/).filter(Boolean);
     return courses.filter(c => {
       const code = c.code.toLowerCase();
       const name = c.name.toLowerCase();
       return terms.every(t => code.includes(t) || name.includes(t));
     });
-  }, [courses, searchTerm]);
+  }, [courses, debouncedTerm]);
 
   const isSelected = (courseId) => selectedCourses.some(c => c.id === courseId);
 
