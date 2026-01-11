@@ -135,6 +135,7 @@ body {
   font-weight: 700;
   letter-spacing: -0.02em;
   background: linear-gradient(to right, #fff, #a1a1aa);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -625,246 +626,242 @@ button {
 .calendar-body {
   display: grid;
   grid-template-columns: 60px repeat(5, 1fr);
+  background: var(--bg);
+}
 
-  .calendar-body {
-    display: grid;
-    grid-template-columns: 60px repeat(5, 1fr);
-    background: var(--bg);
+.time-labels {
+  border-right: 1px solid var(--border);
+  background: var(--card);
+}
+
+.time-label {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 4px 8px 0 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  border-bottom: 1px solid var(--border);
+}
+
+.day-column {
+  position: relative;
+  border-left: 1px solid var(--border);
+}
+
+.hour-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-bottom: 1px solid #27272a;
+  opacity: 0.5;
+}
+
+.course-block {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  border-radius: 6px;
+  border-left: 4px solid;
+  padding: 6px 8px;
+  color: white;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: transform 0.1s;
+}
+
+.course-block:hover {
+  z-index: 10;
+  transform: scale(1.02);
+}
+
+.block-code {
+  font-weight: 700;
+  font-size: 0.85rem;
+  line-height: 1.2;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.block-time {
+  font-size: 0.7rem;
+  opacity: 0.9;
+  margin-top: 2px;
+  font-weight: 500;
+}
+
+.block-instructor {
+  font-size: 0.7rem;
+  opacity: 0.8;
+  margin-top: 4px;
+}
+
+/* === Footer / Exams === */
+.schedule-footer {
+  border-top: 1px solid var(--border);
+  background: #18181b;
+  transition: all 0.3s ease;
+}
+
+.footer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+}
+
+.footer-header:hover {
+  background: var(--hover);
+}
+
+.footer-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.footer-content {
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.exam-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 1rem 1rem 1rem;
+}
+
+.exam-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: #27272a;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  border-left: 3px solid;
+}
+
+.exam-code {
+  font-weight: 600;
+  font-size: 0.8rem;
+  min-width: 80px;
+  color: var(--text);
+}
+
+.exam-date {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+/* === New Interactive Elements === */
+.page-input {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--primary);
+  font-size: 1.25rem;
+  font-weight: 800;
+  width: 60px;
+  text-align: center;
+  border-radius: 4px;
+  padding: 0;
+  margin: 0 4px;
+}
+
+.page-input:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+/* Remove arrows from number input */
+.page-input::-webkit-outer-spin-button,
+.page-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.btn-icon-only {
+  background: var(--border);
+  color: var(--text);
+  border: 1px solid transparent;
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+.btn-icon-only:hover {
+  background: var(--error-bg);
+  border-color: var(--error);
+}
+
+.btn-xs-reset {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  background: var(--error-bg);
+  color: var(--error);
+  border: 1px solid var(--error);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.btn-xs-reset:hover {
+  background: var(--error);
+  color: white;
+}
+
+
+/* === Responsive Design (Mobile/Tablet) === */
+@media (max-width: 900px) {
+  .app-main {
+    grid-template-columns: 1fr;
+    /* Stack panels */
+    overflow-y: auto;
+    /* Allow window scroll */
   }
 
-  .time-labels {
-    border-right: 1px solid var(--border);
-    background: var(--card);
+  .left-panel {
+    max-height: 500px;
+    /* Limit height of selector on mobile */
   }
 
-  .time-label {
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-end;
-    padding: 4px 8px 0 0;
+  .app-container {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .right-panel {
+    height: 600px;
+    /* Fixed height for scheduler on mobile */
+  }
+
+  .header-title h1 {
+    font-size: 1.2rem;
+  }
+
+  .header-title .subtitle {
     font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--text-dim);
-    border-bottom: 1px solid var(--border);
   }
+}
 
-  .day-column {
-    position: relative;
-    border-left: 1px solid var(--border);
-  }
-
-  .hour-line {
-    position: absolute;
-    left: 0;
-    right: 0;
-    border-bottom: 1px solid #27272a;
-    opacity: 0.5;
-  }
-
-  .course-block {
-    position: absolute;
-    left: 4px;
-    right: 4px;
-    border-radius: 6px;
-    border-left: 4px solid;
-    padding: 6px 8px;
-    color: white;
-    overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    transition: transform 0.1s;
-  }
-
-  .course-block:hover {
-    z-index: 10;
-    transform: scale(1.02);
-  }
-
-  .block-code {
-    font-weight: 700;
-    font-size: 0.85rem;
-    line-height: 1.2;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-  }
-
-  .block-time {
-    font-size: 0.7rem;
-    opacity: 0.9;
-    margin-top: 2px;
-    font-weight: 500;
-  }
-
-  .block-instructor {
-    font-size: 0.7rem;
-    opacity: 0.8;
-    margin-top: 4px;
-  }
-
-  /* === Footer / Exams === */
-  .schedule-footer {
-    border-top: 1px solid var(--border);
-    background: #18181b;
-    transition: all 0.3s ease;
-  }
-
-  .footer-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    cursor: pointer;
-  }
-
-  .footer-header:hover {
-    background: var(--hover);
-  }
-
-  .footer-title {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--text);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .footer-content {
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-  }
-
-  .exam-list {
-    display: flex;
+@media (max-width: 600px) {
+  .header-title {
     flex-direction: column;
-    gap: 4px;
-    padding: 0 1rem 1rem 1rem;
+    align-items: flex-start;
+    gap: 2px;
   }
 
-  .exam-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.5rem 0.75rem;
-    background: #27272a;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    border-left: 3px solid;
+  .header-title .divider {
+    display: none;
   }
 
-  .exam-code {
-    font-weight: 600;
-    font-size: 0.8rem;
-    min-width: 80px;
-    color: var(--text);
-  }
-
-  .exam-date {
+  .schedule-controls button {
+    padding: 0.4rem 0.6rem;
     font-size: 0.75rem;
-    color: var(--text-dim);
   }
-
-  /* === New Interactive Elements === */
-  .page-input {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--primary);
-    font-size: 1.25rem;
-    font-weight: 800;
-    width: 60px;
-    text-align: center;
-    border-radius: 4px;
-    padding: 0;
-    margin: 0 4px;
-  }
-
-  .page-input:focus {
-    border-color: var(--primary);
-    outline: none;
-  }
-
-  /* Remove arrows from number input */
-  .page-input::-webkit-outer-spin-button,
-  .page-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-
-  .btn-icon-only {
-    background: var(--border);
-    color: var(--text);
-    border: 1px solid transparent;
-    width: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1rem;
-  }
-
-  .btn-icon-only:hover {
-    background: var(--error-bg);
-    border-color: var(--error);
-  }
-
-  .btn-xs-reset {
-    font-size: 0.65rem;
-    padding: 2px 6px;
-    background: var(--error-bg);
-    color: var(--error);
-    border: 1px solid var(--error);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .btn-xs-reset:hover {
-    background: var(--error);
-    color: white;
-  }
-
-
-  /* === Responsive Design (Mobile/Tablet) === */
-  @media (max-width: 900px) {
-    .app-main {
-      grid-template-columns: 1fr;
-      /* Stack panels */
-      overflow-y: auto;
-      /* Allow window scroll */
-    }
-
-    .left-panel {
-      max-height: 500px;
-      /* Limit height of selector on mobile */
-    }
-
-    .app-container {
-      height: auto;
-      min-height: 100vh;
-    }
-
-    .right-panel {
-      height: 600px;
-      /* Fixed height for scheduler on mobile */
-    }
-
-    .header-title h1 {
-      font-size: 1.2rem;
-    }
-
-    .header-title .subtitle {
-      font-size: 0.75rem;
-    }
-  }
-
-  @media (max-width: 600px) {
-    .header-title {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 2px;
-    }
-
-    .header-title .divider {
-      display: none;
-    }
-
-    .schedule-controls button {
-      padding: 0.4rem 0.6rem;
-      font-size: 0.75rem;
-    }
-  }
+}
