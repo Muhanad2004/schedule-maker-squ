@@ -3,35 +3,43 @@
    Optimized for Clarity & Contrast
    ============================================ */
 
+/* Import Inter and Cairo (for Arabic) */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;700&display=swap');
+
 /* === CSS Variables === */
 :root {
-  /* Dark Palette (Zinc/Slate based) */
-  --bg: #09090b;
-  /* Very dark background */
-  --header-gradient: linear-gradient(to right, #fff, #a1a1aa);
-  /* Very dark background */
-  --card: #18181b;
-  /* Slightly lighter for cards */
-  --border: #27272a;
-  /* Subtle borders */
-  --hover: #27272a;
-  /* Hover states */
+  /* Modern Dark Palette */
+  --bg: #0f172a;
+  /* Slate 900 - Deep Blue/Black */
+  --card: rgba(30, 41, 59, 0.7);
+  /* Glassy Slate 800 */
+  --card-border: rgba(255, 255, 255, 0.1);
+
+  --border: #334155;
+  /* Slate 700 */
+  --hover: #1e293b;
+  /* Slate 800 */
 
   /* Typography */
-  --text: #e4e4e7;
-  /* High brightness for main text */
-  --text-dim: #a1a1aa;
-  /* Dimmed text for secondary info */
-  --text-dark: #000000;
-  /* For chips/buttons that need contrast */
+  --font-en: 'Inter', system-ui, sans-serif;
+  --font-ar: 'Cairo', system-ui, sans-serif;
+  --font-display: 'Outfit', var(--font-en);
 
-  /* Accents */
-  --primary: #3b82f6;
-  /* Bright Blue */
-  --primary-hover: #60a5fa;
-  /* Lighter Blue for hover */
-  --primary-bg: rgba(59, 130, 246, 0.15);
-  /* Tint for active states */
+  --text: #f8fafc;
+  /* Slate 50 */
+  --text-dim: #94a3b8;
+  /* Slate 400 */
+  --text-dark: #0f172a;
+
+  /* Brand Colors */
+  --primary: #6366f1;
+  /* Indigo 500 */
+  --primary-hover: #818cf8;
+  /* Indigo 400 */
+  --primary-bg: rgba(99, 102, 241, 0.15);
+
+  --secondary: #ec4899;
+  /* Pink 500 - for accents/exams */
 
   --error: #ef4444;
   --error-bg: rgba(239, 68, 68, 0.15);
@@ -39,33 +47,43 @@
   --success: #10b981;
   --warning: #f59e0b;
 
-  /* Dimensions & Shadows */
-  --radius: 8px;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  /* UI Tokens */
+  --radius: 12px;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 44px 6px -4px rgb(0 0 0 / 0.1);
+
+  --header-gradient: linear-gradient(to right, #6366f1, #ec4899);
+  /* Indigo to Pink */
+  --glass: blur(12px);
 }
 
 /* Light Theme Overrides */
 [data-theme="light"] {
-  --bg: #ffffff;
-  --card: #f4f4f5;
-  --border: #e4e4e7;
-  --hover: #f4f4f5;
+  --bg: #f8fafc;
+  /* Slate 50 */
+  --card: rgba(255, 255, 255, 0.8);
+  --card-border: rgba(0, 0, 0, 0.05);
+  --border: #e2e8f0;
+  /* Slate 200 */
+  --hover: #f1f5f9;
+  /* Slate 100 */
 
-  --text: #18181b;
-  --text-dim: #71717a;
-  --text-dark: #000000;
+  --text: #0f172a;
+  /* Slate 900 */
+  --text-dim: #64748b;
+  /* Slate 500 */
+  --text-dark: #ffffff;
 
-  --primary: #2563eb;
-  --primary-hover: #3b82f6;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --primary: #4f46e5;
+  /* Indigo 600 */
+  --primary-hover: #6366f1;
+  --primary-bg: rgba(79, 70, 229, 0.1);
 
-  /* Zinc 900 to 600 */
-  --header-gradient: linear-gradient(to right, #18181b, #52525b);
+  --header-gradient: linear-gradient(to right, #4f46e5, #ec4899);
 
-  --error: #dc2626;
-  --error-bg: rgba(220, 38, 38, 0.1);
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.05);
 }
 
 /* === Reset & Base === */
@@ -78,12 +96,32 @@
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-en);
   background: var(--bg);
   color: var(--text);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  direction: ltr;
+  /* Default */
 }
+
+body.font-arabic {
+  font-family: var(--font-ar);
+  direction: rtl;
+  /* For Arabic */
+}
+
+/* Ensure padding/margin logic works for RTL */
+.app-header,
+.header-title,
+.schedule-info,
+.course-item,
+.footer-header,
+.exam-item {
+  gap: 1rem;
+  /* Gap handles spacing direction-agnostically */
+}
+
 
 /* === Layout === */
 .app-container {
@@ -111,12 +149,14 @@ body {
 
 .right-panel {
   background: var(--card);
-  border: 1px solid var(--border);
+  border: 1px solid var(--card-border);
+  backdrop-filter: var(--glass);
+  -webkit-backdrop-filter: var(--glass);
   border-radius: var(--radius);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-lg);
 }
 
 /* === Header === */
@@ -134,12 +174,12 @@ body {
 }
 
 .header-title h1 {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 800;
+
   letter-spacing: -0.02em;
   letter-spacing: -0.02em;
-  background: linear-gradient(to right, #fff, #a1a1aa);
-  /* Default Dark Mode Gradient */
   background: var(--header-gradient);
 
   background-clip: text;
@@ -160,19 +200,25 @@ body {
 }
 
 /* Theme Toggle */
-.theme-toggle-btn {
-  background: transparent;
+.theme-toggle-btn,
+.lang-toggle-btn {
+  background: rgba(255, 255, 255, 0.05);
   color: var(--text-dim);
-  padding: 8px;
+  padding: 8px 12px;
   border-radius: var(--radius);
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid var(--card-border);
+  font-weight: 600;
+  font-size: 0.8rem;
 }
 
-.theme-toggle-btn:hover {
+.theme-toggle-btn:hover,
+.lang-toggle-btn:hover {
   background: var(--hover);
   color: var(--text);
+  border-color: var(--border);
 }
 
 /* === Buttons === */
@@ -186,17 +232,18 @@ button {
 }
 
 .btn-primary {
-  background: var(--text);
-  color: var(--bg);
+  background: var(--primary);
+  color: #fff;
   padding: 0.6rem 1.25rem;
-  white-space: nowrap;
-  flex-shrink: 0;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  letter-spacing: 0.02em;
 }
 
 .btn-primary:hover {
-  background: white;
+  background: var(--primary-hover);
   transform: translateY(-1px);
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+  box-shadow: var(--shadow-lg), 0 0 15px var(--primary);
 }
 
 .btn-primary:disabled {
@@ -208,13 +255,15 @@ button {
 /* === Course Selector === */
 .course-selector {
   background: var(--card);
-  border: 1px solid var(--border);
+  backdrop-filter: var(--glass);
+  -webkit-backdrop-filter: var(--glass);
+  border: 1px solid var(--card-border);
   border-radius: var(--radius);
   display: flex;
   flex-direction: column;
   flex: 1;
   min-height: 0;
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-lg);
 }
 
 .selector-header {
@@ -414,9 +463,11 @@ button {
 /* === Filter Panel === */
 .filter-panel {
   background: var(--card);
-  border: 1px solid var(--border);
+  backdrop-filter: var(--glass);
+  -webkit-backdrop-filter: var(--glass);
+  border: 1px solid var(--card-border);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-lg);
 }
 
 .filter-toggle {

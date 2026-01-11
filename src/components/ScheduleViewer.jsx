@@ -21,55 +21,67 @@ const COLORS = [
 // Format hour to "8 AM"
 const formatHour = (h) => `${h % 12 || 12} ${h < 12 ? 'AM' : 'PM'}`;
 
-export default function ScheduleViewer({ schedule, scheduleIndex, totalSchedules, onNext, onPrev, onJump }) {
-  const exportRef = useRef(null);
+export default function ScheduleViewer({
+  schedule,
+  scheduleIndex,
+  totalSchedules,
+  onNext,
+  onPrev,
+  onJump,
+  t
+}) {
+  const scheduleRef = useRef(null);
   const [examsExpanded, setExamsExpanded] = useState(false);
   const [inputPage, setInputPage] = useState('');
 
+  // Define days based on translations or default
+  const days = t?.days || ["Sun", "Mon", "Tue", "Wed", "Thu"];
+
   // Update input when index changes externally
   useMemo(() => {
-      setInputPage((scheduleIndex + 1).toString());
+    setInputPage((scheduleIndex + 1).toString());
   }, [scheduleIndex]);
 
   const handlePageInput = (e) => {
-      setInputPage(e.target.value);
+    setInputPage(e.target.value);
   };
 
   const handlePageKeyDown = (e) => {
-      if (e.key === 'Enter') {
-          const val = parseInt(inputPage, 10);
-          if (!isNaN(val) && val >= 1 && val <= totalSchedules) {
-              onJump(val - 1);
-          } else {
-              // Reset on invalid
-              setInputPage((scheduleIndex + 1).toString());
-          }
+    if (e.key === 'Enter') {
+      const val = parseInt(inputPage, 10);
+      if (!isNaN(val) && val >= 1 && val <= totalSchedules) {
+        onJump(val - 1);
+      } else {
+        // Reset on invalid
+        setInputPage((scheduleIndex + 1).toString());
       }
+    }
   };
 
   const handlePageBlur = () => {
-       const val = parseInt(inputPage, 10);
-       if (!isNaN(val) && val >= 1 && val <= totalSchedules) {
-           onJump(val - 1);
-       } else {
-           setInputPage((scheduleIndex + 1).toString());
-       }
+    const val = parseInt(inputPage, 10);
+    if (!isNaN(val) && val >= 1 && val <= totalSchedules) {
+      onJump(val - 1);
+    } else {
+      setInputPage((scheduleIndex + 1).toString());
+    }
   };
 
-  const handleExport = useCallback(async () => {
-    if (!exportRef.current) return;
-    const canvas = await html2canvas(exportRef.current, { backgroundColor: '#fff', scale: 2 });
-    const link = document.createElement('a');
-    link.href = canvas.toDataURL('image/png');
-    link.download = `schedule-${scheduleIndex + 1}.png`;
-    link.click();
+  const handleDownload = useCallback(async () => {
+    if (!scheduleRef.current) return;
+
+    html2canvas(scheduleRef.current, { backgroundColor: null }).then(canvas => {
+      const link = document.createElement('a');
+      link.download = `schedule-${scheduleIndex + 1}.png`;
+      link.href = canvas.toDataURL();
+      link.click();
+    });
   }, [scheduleIndex]);
 
-  // ... (rest of processing logic remains same)
   // Process blocks
   const blocks = useMemo(() => {
     if (!schedule) return [];
-    return schedule.flatMap((section, idx) => 
+    return schedule.flatMap((section, idx) =>
       (section.parsedSlots || [])
         .filter(slot => slot.day < 5)
         .map(slot => ({ ...section, ...slot, colorIndex: idx }))
@@ -82,9 +94,12 @@ export default function ScheduleViewer({ schedule, scheduleIndex, totalSchedules
 
   if (!schedule) {
     return (
-      <div className="schedule-empty">
-        <div className="empty-icon">📅</div>
-        <p>Select courses and click <strong>Generate</strong></p>
+      <div className="schedule-viewer empty">
+        <div className="empty-message">
+          <span className="icon">📅</span>
+          <h3>{t.schedule}</h3>
+          <p>{t.noSchedules}</p>
+        </div>
       </div>
     );
   }
@@ -95,34 +110,27 @@ export default function ScheduleViewer({ schedule, scheduleIndex, totalSchedules
     <div className="schedule-viewer">
       {/* Header */}
       <div className="schedule-header">
-        <div className="schedule-info">
-          <span className="schedule-number">#</span>
-          <input 
-            type="number" 
-            className="page-input"
-            value={inputPage}
-            onChange={handlePageInput}
-            onKeyDown={handlePageKeyDown}
-            onBlur={handlePageBlur}
-            min={1}
-            max={totalSchedules}
-          />
-          <span className="schedule-total">of {totalSchedules}</span>
-        </div>
+        <h2>{t.schedule} {scheduleIndex + 1} <span className="text-dim">{t.of} {totalSchedules}</span></h2>
         <div className="schedule-controls">
-          <button onClick={handleExport}>📷 Save</button>
-          <button onClick={onPrev} disabled={scheduleIndex === 0}>← Prev</button>
-          <button onClick={onNext} disabled={scheduleIndex === totalSchedules - 1}>Next →</button>
+          <button onClick={onPrev} disabled={scheduleIndex === 0}>←</button>
+          <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>
+            {scheduleIndex + 1} / {totalSchedules}
+          </span>
+          <button onClick={onNext} disabled={scheduleIndex === totalSchedules - 1}>→</button>
+
+          <button onClick={handleDownload} className="download-btn" title={t.saveImage}>
+            📷
+          </button>
         </div>
       </div>
 
       {/* Calendar */}
       <div className="schedule-calendar">
-        <div ref={exportRef} className="calendar-inner">
+        <div ref={scheduleRef} className="calendar-inner">
           {/* Day Headers */}
           <div className="calendar-header">
             <div className="time-label-header" />
-            {DAYS.map(d => <div key={d} className="day-header">{d}</div>)}
+            {days.map(d => <div key={d} className="day-header">{d}</div>)}
           </div>
 
           {/* Grid */}
@@ -137,7 +145,7 @@ export default function ScheduleViewer({ schedule, scheduleIndex, totalSchedules
             </div>
 
             {/* Day Columns */}
-            {DAYS.map((_, dayIdx) => (
+            {days.map((_, dayIdx) => (
               <div key={dayIdx} className="day-column" style={{ height: hours.length * HOUR_HEIGHT }}>
                 {/* Grid lines */}
                 {hours.map(h => (
@@ -149,7 +157,7 @@ export default function ScheduleViewer({ schedule, scheduleIndex, totalSchedules
                   const color = COLORS[block.colorIndex % COLORS.length];
                   const height = getHeight(block.start, block.end);
                   const compact = height < 50;
-                  
+
                   return (
                     <div
                       key={i}
@@ -180,19 +188,19 @@ export default function ScheduleViewer({ schedule, scheduleIndex, totalSchedules
 
       {/* Footer: Exams */}
       <div className="schedule-footer">
-        <div 
-          className="footer-header" 
+        <div
+          className="footer-header"
           onClick={() => setExamsExpanded(!examsExpanded)}
         >
-          <div className="footer-title">📋 Final Exams</div>
+          <div className="footer-title">📋 {t.examFooter}</div>
           <div style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}>
             {examsExpanded ? '▼' : '▲'}
           </div>
         </div>
-        
-        <div 
-            className="footer-content" 
-            style={{ maxHeight: examsExpanded ? '200px' : '0px', overflowY: 'auto' }}
+
+        <div
+          className="footer-content"
+          style={{ maxHeight: examsExpanded ? '200px' : '0px', overflowY: 'auto' }}
         >
           <div className="exam-list">
             {schedule.map((section, idx) => {

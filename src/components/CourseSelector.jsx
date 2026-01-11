@@ -1,17 +1,18 @@
 import { useState, useMemo } from 'react';
 import { getInstructorScheduleSummary } from '../utils/timeUtils';
 
-export default function CourseSelector({ 
-  courses, 
-  selectedCourses, 
-  onToggleCourse, 
-  instructorFilters, 
+export default function CourseSelector({
+  courses,
+  selectedCourses,
+  onToggleCourse,
+  instructorFilters,
   onToggleInstructor,
-  onClearAll
+  onClearAll,
+  t
 }) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeTab, setActiveTab] = useState('search');
-  
+  const [activeTab, setActiveTab] = useState('all');
+
   const filteredCourses = useMemo(() => {
     if (!searchTerm.trim()) return [];
     const terms = searchTerm.toLowerCase().split(/\s+/).filter(Boolean);
@@ -28,49 +29,48 @@ export default function CourseSelector({
     <div className="course-selector">
       {/* Search Input */}
       <div className="selector-header">
-        <div style={{display:'flex', gap:'0.5rem'}}>
-             <input
-                type="text"
-                placeholder="Search courses..."
-                className="search-input"
-                value={searchTerm}
-                onChange={(e) => {
-                    setSearchTerm(e.target.value);
-                    if (e.target.value) setActiveTab('search');
-                }}
-             />
-             {selectedCourses.length > 0 && (
-                 <button className="btn-icon-only" onClick={onClearAll} title="Clear All Courses">
-                    🗑️
-                 </button>
-             )}
+        <div className="search-box">
+          <input
+            type="text"
+            className="search-input"
+            placeholder={t.searchPlaceholder}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          {/* Only show Clear All in "Selected" tab if we have selected courses */}
+          {activeTab === 'selected' && selectedCourses.length > 0 && (
+            <button className="clear-all-btn" onClick={onClearAll} title={t.remove}>
+              ✕
+            </button>
+          )}
         </div>
       </div>
 
       {/* Tabs */}
       <div className="selector-tabs">
-        <button 
-          className={`tab ${activeTab === 'search' ? 'active' : ''}`}
-          onClick={() => setActiveTab('search')}
+        <button
+          className={`tab-btn ${activeTab === 'all' ? 'active' : ''}`}
+          onClick={() => setActiveTab('all')}
         >
-          Search
+          {t.tabs.all}
         </button>
-        <button 
-          className={`tab ${activeTab === 'selected' ? 'selected-tab-active active' : ''}`}
+        <button
+          className={`tab-btn ${activeTab === 'selected' ? 'active' : ''}`}
           onClick={() => setActiveTab('selected')}
         >
-          Selected ({selectedCourses.length})
+          {t.tabs.selected} ({selectedCourses.length})
         </button>
       </div>
 
       {/* Content */}
       <div className="selector-content">
-        {activeTab === 'search' ? (
-          <SearchResults 
+        {activeTab === 'all' ? (
+          <SearchResults
             searchTerm={searchTerm}
             courses={filteredCourses}
             isSelected={isSelected}
             onToggle={onToggleCourse}
+            t={t}
           />
         ) : (
           <SelectedCourses
@@ -78,6 +78,7 @@ export default function CourseSelector({
             instructorFilters={instructorFilters}
             onToggle={onToggleCourse}
             onToggleInstructor={onToggleInstructor}
+            t={t}
           />
         )}
       </div>
@@ -85,17 +86,17 @@ export default function CourseSelector({
   );
 }
 
-function SearchResults({ searchTerm, courses, isSelected, onToggle }) {
+function SearchResults({ searchTerm, courses, isSelected, onToggle, t }) {
   if (!searchTerm.trim()) {
-    return <div className="empty-state">Start typing to find courses...</div>;
+    return <div className="empty-state">{t.emptySearchPrompt}</div>;
   }
   if (courses.length === 0) {
-    return <div className="empty-state">No matches found.</div>;
+    return <div className="empty-state">{t.noMatchesFound}</div>;
   }
   return (
     <div className="course-list">
       {courses.map(course => (
-        <div 
+        <div
           key={course.id}
           className={`course-item ${isSelected(course.id) ? 'selected' : ''}`}
           onClick={() => onToggle(course)}
@@ -111,9 +112,9 @@ function SearchResults({ searchTerm, courses, isSelected, onToggle }) {
   );
 }
 
-function SelectedCourses({ courses, instructorFilters, onToggle, onToggleInstructor }) {
+function SelectedCourses({ courses, instructorFilters, onToggle, onToggleInstructor, t }) {
   if (courses.length === 0) {
-    return <div className="empty-state">No courses selected yet.</div>;
+    return <div className="empty-state">{t.noCoursesSelected}</div>;
   }
   return (
     <div className="course-list selected-list">
@@ -121,12 +122,12 @@ function SelectedCourses({ courses, instructorFilters, onToggle, onToggleInstruc
         // Group sections by instructor
         const instructorMap = {};
         course.sections.forEach(s => {
-            if (!instructorMap[s.instructor]) instructorMap[s.instructor] = [];
-            instructorMap[s.instructor].push(s);
+          if (!instructorMap[s.instructor]) instructorMap[s.instructor] = [];
+          instructorMap[s.instructor].push(s);
         });
         const instructors = Object.keys(instructorMap);
         const allowed = instructorFilters[course.id];
-        
+
         return (
           <div key={course.id} className="selected-course-card">
             <div className="card-header">
@@ -136,14 +137,14 @@ function SelectedCourses({ courses, instructorFilters, onToggle, onToggleInstruc
               </div>
               <button className="remove-btn" onClick={() => onToggle(course)}>✕</button>
             </div>
-            
+
             <div className="instructor-filters">
-              <span className="filter-label">Instructors & Times:</span>
+              <span className="filter-label">{t.instructorTimesLabel}:</span>
               <div className="instructor-chips">
                 {instructors.map(inst => {
                   const isIncluded = !allowed || allowed.includes(inst);
                   const timeSummary = getInstructorScheduleSummary(instructorMap[inst]);
-                  
+
                   return (
                     <button
                       key={inst}
