@@ -570,20 +570,19 @@ input {
   height: 100%;
 }
 
-.schedule-viewer.empty {
-  justify-content: center;
+.schedule-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-}
-
-.empty-message {
-  text-align: center;
+  justify-content: center;
   color: var(--text-dim);
+  text-align: center;
+  gap: 0.5rem;
 }
 
 .empty-icon {
   font-size: 3rem;
-  display: block;
-  margin-bottom: 1rem;
   opacity: 0.5;
 }
 
@@ -598,6 +597,7 @@ input {
 .schedule-header h2 {
   font-size: 1.25rem;
   font-weight: 600;
+  margin: 0;
 }
 
 .text-dim {
@@ -618,54 +618,64 @@ input {
   text-align: center;
 }
 
-/* Calendar Grid - Row Based */
+/* Calendar Grid */
 .schedule-calendar {
   flex: 1;
   overflow: auto;
   padding: 1rem;
 }
 
-.calendar-grid-wrapper {
-  display: flex;
-  flex-direction: column;
-  min-width: 600px;
+.calendar-container {
+  min-width: 650px;
 }
 
-.calendar-row {
+.calendar-header-row {
   display: grid;
   grid-template-columns: 70px repeat(5, 1fr);
   gap: 4px;
-}
-
-.calendar-row.header-row {
   margin-bottom: 4px;
 }
 
-.time-cell {
-  font-size: 0.75rem;
-  color: var(--text-dim);
-  text-align: right;
-  padding-right: 8px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-end;
-  padding-top: 4px;
-}
-
-.day-cell {
-  position: relative;
-  background: var(--bg);
-  border-radius: 4px;
-  border-bottom: 1px solid var(--card-border);
-}
-
-.day-cell.header-cell {
+.day-header {
   text-align: center;
   font-weight: 600;
   padding: 0.5rem;
   background: var(--primary-bg);
   color: var(--primary);
-  border: none;
+  border-radius: 6px;
+}
+
+.calendar-body {
+  display: grid;
+  grid-template-columns: 70px repeat(5, 1fr);
+  gap: 4px;
+}
+
+.time-gutter {
+  display: flex;
+  flex-direction: column;
+}
+
+.time-slot {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  text-align: right;
+  padding-right: 8px;
+  padding-top: 2px;
+}
+
+.day-column {
+  position: relative;
+  background: var(--bg);
+  border-radius: 4px;
+}
+
+.hour-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--card-border);
 }
 
 .course-block {
@@ -673,17 +683,21 @@ input {
   left: 2px;
   right: 2px;
   border-radius: 6px;
-  padding: 4px 8px;
+  padding: 4px 6px;
   color: white;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   overflow: hidden;
   border-left: 4px solid;
-  box-shadow: var(--shadow);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
 }
 
 .block-code {
   font-weight: 700;
+  font-size: 0.75rem;
 }
 
 .block-time {
@@ -692,9 +706,11 @@ input {
 }
 
 .block-instructor {
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   opacity: 0.8;
-  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Footer */
@@ -702,28 +718,24 @@ input {
   border-top: 1px solid var(--card-border);
 }
 
-.footer-header {
+.footer-toggle {
   padding: 0.75rem 1rem;
   display: flex;
   justify-content: space-between;
-  align-items: center;
   cursor: pointer;
   font-weight: 500;
 }
 
-.footer-header:hover {
+.footer-toggle:hover {
   background: var(--bg);
-}
-
-.footer-content {
-  padding: 1rem;
-  border-top: 1px solid var(--card-border);
 }
 
 .exam-list {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  padding: 1rem;
+  border-top: 1px solid var(--card-border);
 }
 
 .exam-item {
