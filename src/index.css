@@ -1,26 +1,32 @@
 /* ============================================
    SCHEDULE MAKER - Complete Stylesheet
-   Themes: Soft & Airy (Light) | Earthy Dark
+   Themes: Sand & Stone (Light) | Midnight Slate (Dark)
    ============================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;500;600;700&family=Outfit:wght@500;700&display=swap');
 
 /* === Theme Variables === */
 :root {
-  /* Light Theme (Default): Soft & Airy */
-  --bg: #FBFAF5;
+  /* Light Theme (Default): Sand & Stone */
+  --bg: #F2EBE5;
+  /* Derived from #D3C3B9 (Lighter) */
   --card: #FFFFFF;
   --card-border: #E5E7EB;
 
-  --text: #1F2937;
+  --text: #161616;
+  /* #161616 (Black) */
   --text-dim: #6B7280;
 
-  --primary: #8B5CF6;
-  --primary-hover: #7C3AED;
-  --primary-bg: #F3E8FF;
+  --primary: #B58863;
+  /* #B58863 (Tan) */
+  --primary-hover: #9E7452;
+  --primary-bg: #F5EBE5;
+  /* Light Tan */
 
-  --secondary: #C7DEFA;
-  --accent: #DED7FB;
+  --secondary: #A79E9C;
+  /* #A79E9C (Grey) */
+  --accent: #D3C3B9;
+  /* #D3C3B9 (Beige) */
 
   --success: #10B981;
   --error: #EF4444;
@@ -35,20 +41,27 @@
 }
 
 [data-theme="dark"] {
-  /* Dark Theme: Earthy */
-  --bg: #1B2118;
-  --card: #2C2C2C;
-  --card-border: #3D3D3D;
+  /* Dark Theme: Midnight Slate */
+  --bg: #161616;
+  /* #161616 (Black) */
+  --card: #10232A;
+  /* #10232A (Deep Teal) */
+  --card-border: #3D4D55;
+  /* #3D4D55 (Slate) */
 
-  --text: #E5E7EB;
-  --text-dim: #9CA3AF;
+  --text: #D3C3B9;
+  /* #D3C3B9 (Beige) */
+  --text-dim: #A79E9C;
+  /* #A79E9C (Grey) */
 
-  --primary: #D4AF37;
-  --primary-hover: #FABE28;
-  --primary-bg: rgba(212, 175, 55, 0.15);
+  --primary: #B58863;
+  /* #B58863 (Tan) - Persistent Accent */
+  --primary-hover: #CD9A70;
+  --primary-bg: rgba(181, 136, 99, 0.15);
 
-  --secondary: #57534E;
-  --accent: #78716C;
+  --secondary: #3D4D55;
+  /* #3D4D55 (Slate) */
+  --accent: #A79E9C;
 
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
