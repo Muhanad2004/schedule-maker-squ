@@ -1,8 +1,8 @@
 import { useMemo, useRef, useCallback, useState } from 'react';
 import { formatTime } from '../utils/timeUtils';
 
-const START_HOUR = 8;
-const END_HOUR = 18;
+const START_HOUR = 7;
+const END_HOUR = 22; // 10 PM
 const HOUR_HEIGHT = 60;
 const TOTAL_HEIGHT = (END_HOUR - START_HOUR) * HOUR_HEIGHT;
 
@@ -29,7 +29,8 @@ export default function ScheduleViewer({
 }) {
   const scheduleRef = useRef(null);
   const [examsExpanded, setExamsExpanded] = useState(false);
-  const days = t?.days || ['Sun', 'Mon', 'Tue', 'Wed', 'Thu'];
+  // Ensure we always have days, even if translation fails
+  const days = (t && t.days && t.days.length === 5) ? t.days : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu'];
   const hours = Array.from({ length: END_HOUR - START_HOUR }, (_, i) => START_HOUR + i);
 
   const handleDownload = useCallback(async () => {
