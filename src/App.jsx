@@ -217,9 +217,9 @@ export default function App() {
         {/* Header */}
         <header className="app-header">
           <div className="header-title">
-            <h1>{t.appTitle}</h1>
+            <h1>Schedule Maker</h1>
             <span className="divider" />
-            <span className="subtitle">{t.university}</span>
+            <span className="subtitle">Muhanad @ Sultan Qaboos University</span>
             <DataSourceBadge sourceDate="2026-01-11" />
           </div>
           <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
