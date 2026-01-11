@@ -13,7 +13,7 @@ const DAYS_MAP = {
     sat: 6, s: 6, saturday: 6
 };
 
-const TIME_REGEX = /(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/;
+const TIME_REGEX = /(\d{1,2}:\d{2}(?::\d{2})?)\s*-\s*(\d{1,2}:\d{2}(?::\d{2})?)/;
 
 /**
  * Parse "HH:MM" to minutes from midnight
