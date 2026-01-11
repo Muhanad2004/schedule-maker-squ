@@ -1,8 +1,8 @@
 import { useMemo, useRef, useCallback, useState } from 'react';
 import { formatTime } from '../utils/timeUtils';
 
-const START_HOUR = 7;
-const END_HOUR = 22; // 10 PM
+const START_HOUR = 8;
+const END_HOUR = 18; // 6 PM
 const HOUR_HEIGHT = 60;
 const TOTAL_HEIGHT = (END_HOUR - START_HOUR) * HOUR_HEIGHT;
 
