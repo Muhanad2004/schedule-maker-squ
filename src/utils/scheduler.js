@@ -1,20 +1,22 @@
 /**
- * Checks if two time ranges overlap.
- * @param {Object} t1 - { day, start, end } (start/end in minutes or comparable value)
- * @param {Object} t2 
+ * Schedule Generator - Clean Implementation
+ * Uses backtracking to find all non-conflicting schedule combinations
  */
-function isOverlapping(t1, t2) {
-    if (t1.day !== t2.day) return false;
-    // Assuming 24h format converted to minutes or similar, or string comparison if standard ISO
-    // Let's assume input comes as "HH:MM" strings. We need to parse them.
-    // Actually, let's helper function to parse time first.
 
-    // Simplification: We will assume the passed Objects already have parsed start/end in minutes.
-    return Math.max(t1.start, t2.start) < Math.min(t1.end, t2.end);
-}
+const DAYS_MAP = {
+    sun: 0, u: 0, sunday: 0,
+    mon: 1, m: 1, monday: 1,
+    tue: 2, t: 2, tuesday: 2,
+    wed: 3, w: 3, wednesday: 3,
+    thu: 4, r: 4, thursday: 4,
+    fri: 5, f: 5, friday: 5,
+    sat: 6, s: 6, saturday: 6
+};
+
+const TIME_REGEX = /(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/;
 
 /**
- * Parses a time string "HH:MM" to minutes from midnight.
+ * Parse "HH:MM" to minutes from midnight
  */
 function parseTime(timeStr) {
     if (!timeStr) return 0;
@@ -23,22 +25,9 @@ function parseTime(timeStr) {
 }
 
 /**
- * Parses time slots typically found in university data.
- * Format examples: "Sun 10:00-11:50", "Mon,Wed 14:00-15:15"
- * This function needs to be robust.
+ * Parse time string like "SUN 10:00-11:30 | TUE 10:00-11:30"
+ * Returns array of { day, start, end } objects
  */
-const DAYS_MAP = {
-    'sun': 0, 'u': 0, 'sunday': 0,
-    'mon': 1, 'm': 1, 'monday': 1,
-    'tue': 2, 't': 2, 'tuesday': 2,
-    'wed': 3, 'w': 3, 'wednesday': 3,
-    'thu': 4, 'r': 4, 'thursday': 4,
-    'fri': 5, 'f': 5, 'friday': 5,
-    'sat': 6, 's': 6, 'saturday': 6
-};
-
-const TIME_REGEX = /(\d{1,2}:\d{2}(?::\d{2})?)\s*-\s*(\d{1,2}:\d{2}(?::\d{2})?)/;
-
 export function parseTimeSlots(timeString) {
     if (!timeString) return [];
 
@@ -46,19 +35,18 @@ export function parseTimeSlots(timeString) {
     const parts = timeString.split('|');
 
     for (const part of parts) {
-        const lower = part.toLowerCase();
+        const lower = part.toLowerCase().trim();
         const timeMatch = lower.match(TIME_REGEX);
 
         if (timeMatch) {
             const start = parseTime(timeMatch[1]);
             const end = parseTime(timeMatch[2]);
 
-            // Extract days from this specific part
-            const nonTimePart = lower.replace(TIME_REGEX, '');
-            const tokens = nonTimePart.split(/[^a-z]+/).filter(Boolean);
+            // Find day names in this part
+            const tokens = lower.replace(TIME_REGEX, '').split(/[^a-z]+/).filter(Boolean);
 
             for (const token of tokens) {
-                if (DAYS_MAP.hasOwnProperty(token)) {
+                if (token in DAYS_MAP) {
                     slots.push({ day: DAYS_MAP[token], start, end });
                 }
             }
@@ -69,19 +57,21 @@ export function parseTimeSlots(timeString) {
 }
 
 /**
- * Checks if a section conflicts with an existing schedule.
- * @param {Object} section 
- * @param {Array} currentSchedule 
+ * Check if two time slots overlap
+ */
+function isOverlapping(slot1, slot2) {
+    if (slot1.day !== slot2.day) return false;
+    return Math.max(slot1.start, slot2.start) < Math.min(slot1.end, slot2.end);
+}
+
+/**
+ * Check if a section conflicts with current schedule
  */
 function hasConflict(section, currentSchedule) {
-    // section.time is the raw string, we need to parse it or have it pre-parsed.
-    // For performance, pre-parsing in dataLoader or convert-data is better.
-    // But let's do it on fly or assume pre-parsed 'parsedSlots'.
+    const newSlots = section.parsedSlots || parseTimeSlots(section.time || '');
 
-    const newSlots = section.parsedSlots || parseTimeSlots(section.time || "");
-
-    for (const scheduledSection of currentSchedule) {
-        const existingSlots = scheduledSection.parsedSlots || parseTimeSlots(scheduledSection.time || "");
+    for (const scheduled of currentSchedule) {
+        const existingSlots = scheduled.parsedSlots || parseTimeSlots(scheduled.time || '');
 
         for (const s1 of newSlots) {
             for (const s2 of existingSlots) {
@@ -93,15 +83,15 @@ function hasConflict(section, currentSchedule) {
 }
 
 /**
- * Generates all possible schedules using backtracking.
- * @param {Array} selectedCourses - Array of Course objects, each containing .sections
- * @returns {Array} Array of schedules (each schedule is an array of Sections)
+ * Generate all valid schedule combinations
  */
 export function generateSchedules(selectedCourses) {
     const results = [];
 
-    // Optimization: Sort courses by number of sections (fewest options first)
-    const sortedCourses = [...selectedCourses].sort((a, b) => a.sections.length - b.sections.length);
+    // Sort by section count (fewest first for faster pruning)
+    const sortedCourses = [...selectedCourses].sort(
+        (a, b) => a.sections.length - b.sections.length
+    );
 
     function backtrack(courseIndex, currentSchedule) {
         if (courseIndex === sortedCourses.length) {
@@ -112,20 +102,18 @@ export function generateSchedules(selectedCourses) {
         const course = sortedCourses[courseIndex];
 
         for (const section of course.sections) {
-            // Lazy parsing if not already done
+            // Lazy parse time slots
             if (!section.parsedSlots) {
-                section.parsedSlots = parseTimeSlots(section.time || "");
+                section.parsedSlots = parseTimeSlots(section.time || '');
             }
 
             if (!hasConflict(section, currentSchedule)) {
-                // Enrich section with course info so UI can display it
-                // We create a new object to avoid mutating the original data endlessly if we rerun 
-                const enrichedSection = {
+                const enriched = {
                     ...section,
                     code: course.code,
                     name: course.name
                 };
-                currentSchedule.push(enrichedSection);
+                currentSchedule.push(enriched);
                 backtrack(courseIndex + 1, currentSchedule);
                 currentSchedule.pop();
             }

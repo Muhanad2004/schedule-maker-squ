@@ -11,83 +11,58 @@ export default function CourseSelector({
   t
 }) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedTerm, setDebouncedTerm] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [activeTab, setActiveTab] = useState('all');
 
-  // Debounce search input
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     setDebouncedTerm(searchTerm);
-  //   }, 300); // 300ms delay
-  //   return () => clearTimeout(timer);
-  // }, [searchTerm]);
-  // Actually, for simplicity and immediate feedback on small datasets, 
-  // we might keep it instant but let's stick to "fits like a glove".
-  // On second thought, React 18 automatic batching handles this well often.
-  // But let's add it for strict performance "glove fit".
-
-  // Actually, I can't easily insert hooks without changing the function body structure significantly 
-  // if I try to be too clever. Let's just do the useEffect.
-
+  // Debounce search
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedTerm(searchTerm), 300);
+    const timer = setTimeout(() => setDebouncedSearch(searchTerm), 200);
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
   const filteredCourses = useMemo(() => {
-    if (!debouncedTerm.trim()) return [];
-    const terms = debouncedTerm.toLowerCase().split(/\s+/).filter(Boolean);
+    if (!debouncedSearch.trim()) return [];
+    const terms = debouncedSearch.toLowerCase().split(/\s+/).filter(Boolean);
     return courses.filter(c => {
       const code = c.code.toLowerCase();
       const name = c.name.toLowerCase();
-      return terms.every(t => code.includes(t) || name.includes(t));
+      return terms.every(term => code.includes(term) || name.includes(term));
     });
-  }, [courses, debouncedTerm]);
+  }, [courses, debouncedSearch]);
 
-  const isSelected = (courseId) => selectedCourses.some(c => c.id === courseId);
+  const isSelected = (id) => selectedCourses.some(c => c.id === id);
 
   return (
     <div className="course-selector">
-      {/* Search Input */}
       <div className="selector-header">
-        <div className="search-box">
-          <input
-            type="text"
-            className="search-input"
-            placeholder={t.searchPlaceholder}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          {/* Only show Clear All in "Selected" tab if we have selected courses */}
-          {activeTab === 'selected' && selectedCourses.length > 0 && (
-            <button className="clear-all-btn" onClick={onClearAll} title={t.remove}>
-              ✕
-            </button>
-          )}
-        </div>
+        <input
+          type="text"
+          className="search-input"
+          placeholder={t.searchPlaceholder}
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+        />
       </div>
 
-      {/* Tabs */}
       <div className="selector-tabs">
         <button
-          className={`tab-btn ${activeTab === 'all' ? 'active' : ''}`}
+          className={`tab ${activeTab === 'all' ? 'active' : ''}`}
           onClick={() => setActiveTab('all')}
         >
           {t.tabs.all}
         </button>
         <button
-          className={`tab-btn ${activeTab === 'selected' ? 'active' : ''}`}
+          className={`tab ${activeTab === 'selected' ? 'active' : ''}`}
           onClick={() => setActiveTab('selected')}
         >
           {t.tabs.selected} ({selectedCourses.length})
         </button>
       </div>
 
-      {/* Content */}
       <div className="selector-content">
         {activeTab === 'all' ? (
           <SearchResults
-            searchTerm={searchTerm}
+            searchTerm={debouncedSearch}
             courses={filteredCourses}
             isSelected={isSelected}
             onToggle={onToggleCourse}
@@ -99,6 +74,7 @@ export default function CourseSelector({
             instructorFilters={instructorFilters}
             onToggle={onToggleCourse}
             onToggleInstructor={onToggleInstructor}
+            onClearAll={onClearAll}
             t={t}
           />
         )}
@@ -133,14 +109,20 @@ function SearchResults({ searchTerm, courses, isSelected, onToggle, t }) {
   );
 }
 
-function SelectedCourses({ courses, instructorFilters, onToggle, onToggleInstructor, t }) {
+function SelectedCourses({ courses, instructorFilters, onToggle, onToggleInstructor, onClearAll, t }) {
   if (courses.length === 0) {
     return <div className="empty-state">{t.noCoursesSelected}</div>;
   }
+
   return (
-    <div className="course-list selected-list">
+    <div className="course-list">
+      {courses.length > 0 && (
+        <button className="clear-all-btn" onClick={onClearAll}>
+          Clear All
+        </button>
+      )}
+
       {courses.map(course => {
-        // Group sections by instructor
         const instructorMap = {};
         course.sections.forEach(s => {
           if (!instructorMap[s.instructor]) instructorMap[s.instructor] = [];
@@ -165,16 +147,15 @@ function SelectedCourses({ courses, instructorFilters, onToggle, onToggleInstruc
                 {instructors.map(inst => {
                   const isIncluded = !allowed || allowed.includes(inst);
                   const timeSummary = getInstructorScheduleSummary(instructorMap[inst]);
-
                   return (
                     <button
                       key={inst}
-                      className={`instructor-chip ${isIncluded ? 'included' : 'excluded'}`}
+                      className={`chip ${isIncluded ? 'included' : 'excluded'}`}
                       onClick={() => onToggleInstructor(course.id, inst)}
-                      title={`Click to toggle.\nTeaches at: ${timeSummary}`}
+                      title={timeSummary}
                     >
-                      <span className="inst-name">{inst}</span>
-                      <span className="inst-time">{timeSummary}</span>
+                      <span className="chip-name">{inst}</span>
+                      <span className="chip-time">{timeSummary}</span>
                     </button>
                   );
                 })}

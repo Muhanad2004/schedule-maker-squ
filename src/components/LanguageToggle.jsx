@@ -1,20 +1,11 @@
-import React from 'react';
 import { useLanguage } from './LanguageContext';
 
-const LanguageToggle = () => {
-    const { language, toggleLanguage } = useLanguage();
+export default function LanguageToggle() {
+    const { lang, toggleLang } = useLanguage();
 
     return (
-        <button
-            className="lang-toggle-btn"
-            onClick={toggleLanguage}
-            title={language === 'en' ? "Switch to Arabic" : "Switch to English"}
-        >
-            <span className="lang-text">
-                {language === 'en' ? 'عربي' : 'EN'}
-            </span>
+        <button className="icon-btn" onClick={toggleLang} title="Switch Language">
+            {lang === 'en' ? 'عربي' : 'EN'}
         </button>
     );
-};
-
-export default LanguageToggle;
+}

@@ -1,7 +1,6 @@
 import { useMemo, useRef, useCallback, useState } from 'react';
 import { formatTime } from '../utils/timeUtils';
 
-const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu'];
 const START_HOUR = 8;
 const END_HOUR = 18;
 const HOUR_HEIGHT = 60;
@@ -17,7 +16,6 @@ const COLORS = [
   { bg: '#84cc16', border: '#65a30d' },
 ];
 
-// Format hour to "8 AM"
 const formatHour = (h) => `${h % 12 || 12} ${h < 12 ? 'AM' : 'PM'}`;
 
 export default function ScheduleViewer({
@@ -26,65 +24,26 @@ export default function ScheduleViewer({
   totalSchedules,
   onNext,
   onPrev,
-  onJump,
   t
 }) {
   const scheduleRef = useRef(null);
   const [examsExpanded, setExamsExpanded] = useState(false);
-  const [inputPage, setInputPage] = useState('');
-
-  // Define days based on translations or default
-  const days = t?.days || ["Sun", "Mon", "Tue", "Wed", "Thu"];
-
-  // Update input when index changes externally
-  useMemo(() => {
-    setInputPage((scheduleIndex + 1).toString());
-  }, [scheduleIndex]);
-
-  const handlePageInput = (e) => {
-    setInputPage(e.target.value);
-  };
-
-  const handlePageKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      const val = parseInt(inputPage, 10);
-      if (!isNaN(val) && val >= 1 && val <= totalSchedules) {
-        onJump(val - 1);
-      } else {
-        // Reset on invalid
-        setInputPage((scheduleIndex + 1).toString());
-      }
-    }
-  };
-
-  const handlePageBlur = () => {
-    const val = parseInt(inputPage, 10);
-    if (!isNaN(val) && val >= 1 && val <= totalSchedules) {
-      onJump(val - 1);
-    } else {
-      setInputPage((scheduleIndex + 1).toString());
-    }
-  };
+  const days = t?.days || ['Sun', 'Mon', 'Tue', 'Wed', 'Thu'];
 
   const handleDownload = useCallback(async () => {
     if (!scheduleRef.current) return;
-
-    // Lazy load html2canvas only when needed
     try {
-      const html2canvasModule = await import('html2canvas');
-      const html2canvas = html2canvasModule.default;
-
+      const html2canvas = (await import('html2canvas')).default;
       const canvas = await html2canvas(scheduleRef.current, { backgroundColor: null });
       const link = document.createElement('a');
       link.download = `schedule-${scheduleIndex + 1}.png`;
       link.href = canvas.toDataURL();
       link.click();
     } catch (error) {
-      console.error('Failed to load html2canvas or generate image:', error);
+      console.error('Download failed:', error);
     }
   }, [scheduleIndex]);
 
-  // Process blocks
   const blocks = useMemo(() => {
     if (!schedule) return [];
     return schedule.flatMap((section, idx) =>
@@ -94,7 +53,6 @@ export default function ScheduleViewer({
     );
   }, [schedule]);
 
-  // Position helpers
   const getTop = (mins) => ((mins - START_HOUR * 60) / 60) * HOUR_HEIGHT;
   const getHeight = (start, end) => ((end - start) / 60) * HOUR_HEIGHT;
 
@@ -102,7 +60,7 @@ export default function ScheduleViewer({
     return (
       <div className="schedule-viewer empty">
         <div className="empty-message">
-          <span className="icon">📅</span>
+          <span className="empty-icon">📅</span>
           <h3>{t.schedule}</h3>
           <p>{t.noSchedules}</p>
         </div>
@@ -114,34 +72,35 @@ export default function ScheduleViewer({
 
   return (
     <div className="schedule-viewer">
-      {/* Header */}
       <div className="schedule-header">
-        <h2>{t.schedule} {scheduleIndex + 1} <span className="text-dim">{t.of} {totalSchedules}</span></h2>
+        <h2>
+          {t.schedule} {scheduleIndex + 1}
+          <span className="text-dim"> {t.of} {totalSchedules}</span>
+        </h2>
         <div className="schedule-controls">
-          <button onClick={onPrev} disabled={scheduleIndex === 0}>←</button>
-          <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>
-            {scheduleIndex + 1} / {totalSchedules}
-          </span>
-          <button onClick={onNext} disabled={scheduleIndex === totalSchedules - 1}>→</button>
-
-          <button onClick={handleDownload} className="download-btn" title={t.saveImage}>
+          <button className="nav-btn" onClick={onPrev} disabled={scheduleIndex === 0}>
+            ←
+          </button>
+          <span className="schedule-counter">{scheduleIndex + 1} / {totalSchedules}</span>
+          <button className="nav-btn" onClick={onNext} disabled={scheduleIndex === totalSchedules - 1}>
+            →
+          </button>
+          <button className="icon-btn" onClick={handleDownload} title={t.saveImage}>
             📷
           </button>
         </div>
       </div>
 
-      {/* Calendar */}
       <div className="schedule-calendar">
         <div ref={scheduleRef} className="calendar-inner">
-          {/* Day Headers */}
           <div className="calendar-header">
-            <div className="time-label-header" />
-            {days.map(d => <div key={d} className="day-header">{d}</div>)}
+            <div className="time-label-header"></div>
+            {days.map(d => (
+              <div key={d} className="day-header">{d}</div>
+            ))}
           </div>
 
-          {/* Grid */}
           <div className="calendar-body">
-            {/* Time Labels */}
             <div className="time-labels">
               {hours.map(h => (
                 <div key={h} className="time-label" style={{ height: HOUR_HEIGHT }}>
@@ -150,19 +109,19 @@ export default function ScheduleViewer({
               ))}
             </div>
 
-            {/* Day Columns */}
             {days.map((_, dayIdx) => (
               <div key={dayIdx} className="day-column" style={{ height: hours.length * HOUR_HEIGHT }}>
-                {/* Grid lines */}
                 {hours.map(h => (
-                  <div key={h} className="hour-line" style={{ top: (h - START_HOUR) * HOUR_HEIGHT }} />
+                  <div
+                    key={h}
+                    className="hour-line"
+                    style={{ top: (h - START_HOUR) * HOUR_HEIGHT }}
+                  />
                 ))}
 
-                {/* Blocks */}
                 {blocks.filter(b => b.day === dayIdx).map((block, i) => {
                   const color = COLORS[block.colorIndex % COLORS.length];
                   const height = getHeight(block.start, block.end);
-                  const compact = height < 50;
 
                   return (
                     <div
@@ -174,13 +133,13 @@ export default function ScheduleViewer({
                         background: color.bg,
                         borderLeftColor: color.border,
                       }}
-                      title={`${block.code} | ${block.instructor} | ${formatTime(block.start)} - ${formatTime(block.end)}`}
+                      title={`${block.code} | ${block.instructor}`}
                     >
                       <div className="block-code">{block.code}/{block.section}</div>
                       <div className="block-time">
                         {formatTime(block.start)} - {formatTime(block.end)}
                       </div>
-                      {!compact && height >= 60 && (
+                      {height >= 60 && (
                         <div className="block-instructor">{block.instructor}</div>
                       )}
                     </div>
@@ -192,37 +151,27 @@ export default function ScheduleViewer({
         </div>
       </div>
 
-      {/* Footer: Exams */}
       <div className="schedule-footer">
-        <div
-          className="footer-header"
-          onClick={() => setExamsExpanded(!examsExpanded)}
-        >
-          <div className="footer-title">📋 {t.examFooter}</div>
-          <div style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}>
-            {examsExpanded ? '▼' : '▲'}
-          </div>
+        <div className="footer-header" onClick={() => setExamsExpanded(!examsExpanded)}>
+          <span>📋 {t.examFooter}</span>
+          <span>{examsExpanded ? '▼' : '▲'}</span>
         </div>
 
-        <div
-          className="footer-content"
-          style={{ maxHeight: examsExpanded ? '200px' : '0px', overflowY: 'auto' }}
-        >
-          <div className="exam-list">
-            {schedule.map((section, idx) => {
-              const color = COLORS[idx % COLORS.length];
-              const hasExam = section.exam && section.exam.trim();
-              return (
-                <div key={idx} className="exam-item" style={{ borderLeftColor: color.bg }}>
-                  <span className="exam-code">{section.code}</span>
-                  <span className={`exam-date ${!hasExam ? 'tba' : ''}`}>
-                    {hasExam ? section.exam : 'TBA'}
-                  </span>
-                </div>
-              );
-            })}
+        {examsExpanded && (
+          <div className="footer-content">
+            <div className="exam-list">
+              {schedule.map((section, idx) => {
+                const color = COLORS[idx % COLORS.length];
+                return (
+                  <div key={idx} className="exam-item" style={{ borderLeftColor: color.bg }}>
+                    <span className="exam-code">{section.code}</span>
+                    <span className="exam-date">{section.exam || 'TBA'}</span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

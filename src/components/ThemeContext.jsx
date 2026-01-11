@@ -1,25 +1,29 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 const ThemeContext = createContext();
 
 export const useTheme = () => useContext(ThemeContext);
 
-export const ThemeProvider = ({ children }) => {
-    // Default to 'dark' if no preference is saved
+export function ThemeProvider({ children }) {
     const [theme, setTheme] = useState(() => {
-        const savedTheme = localStorage.getItem('app-theme');
-        return savedTheme || 'light';
+        try {
+            return localStorage.getItem('theme') || 'light';
+        } catch {
+            return 'light';
+        }
     });
 
     useEffect(() => {
-        // Update the data-theme attribute on the root element
         document.documentElement.setAttribute('data-theme', theme);
-        // Persist the choice
-        localStorage.setItem('app-theme', theme);
+        try {
+            localStorage.setItem('theme', theme);
+        } catch {
+            // Ignore storage errors
+        }
     }, [theme]);
 
     const toggleTheme = () => {
-        setTheme(prevTheme => (prevTheme === 'dark' ? 'light' : 'dark'));
+        setTheme(prev => prev === 'light' ? 'dark' : 'light');
     };
 
     return (
@@ -27,4 +31,4 @@ export const ThemeProvider = ({ children }) => {
             {children}
         </ThemeContext.Provider>
     );
-};
+}

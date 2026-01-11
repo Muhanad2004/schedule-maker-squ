@@ -1,168 +1,91 @@
+/* Loading Screen - Book Animation */
+
 .loading-screen {
     position: fixed;
     inset: 0;
-    background: var(--bg-solid);
-    background-image: var(--bg);
+    background: #FBFAF5;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 9999;
-    animation: fadeIn 0.3s ease-in;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
 }
 
 .loading-content {
     text-align: center;
-    animation: slideUp 0.5s ease-out;
-}
-
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.loading-icon {
-    margin-bottom: 2rem;
     display: flex;
-    justify-content: center;
-}
-
-.calendar-icon {
-    width: 80px;
-    height: 80px;
-    background: var(--card);
-    border: 2px solid var(--card-border);
-    border-radius: var(--radius);
-    padding: 0.5rem;
-    animation: pulse 2s ease-in-out infinite;
-    backdrop-filter: var(--glass);
-    -webkit-backdrop-filter: var(--glass);
-}
-
-@keyframes pulse {
-
-    0%,
-    100% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4);
-    }
-
-    50% {
-        transform: scale(1.05);
-        box-shadow: 0 0 0 10px rgba(139, 92, 246, 0);
-    }
-}
-
-.calendar-header {
-    height: 12px;
-    background: var(--primary);
-    border-radius: 4px 4px 0 0;
-    margin-bottom: 0.5rem;
-}
-
-.calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.5rem;
-}
-
-.calendar-dot {
-    aspect-ratio: 1;
-    background: var(--text-dim);
-    border-radius: 4px;
-    animation: dotPulse 1.5s ease-in-out infinite;
-}
-
-.calendar-dot:nth-child(1) {
-    animation-delay: 0s;
-}
-
-.calendar-dot:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-.calendar-dot:nth-child(3) {
-    animation-delay: 0.4s;
-}
-
-.calendar-dot:nth-child(4) {
-    animation-delay: 0.6s;
-}
-
-@keyframes dotPulse {
-
-    0%,
-    100% {
-        opacity: 0.3;
-    }
-
-    50% {
-        opacity: 1;
-    }
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
 }
 
 .loading-title {
-    font-family: var(--font-display);
+    font-family: 'Outfit', sans-serif;
     font-size: 2rem;
-    font-weight: 800;
-    background: var(--header-gradient);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 0.5rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin: 0;
 }
 
 .loading-message {
-    color: var(--text-dim);
+    color: #6B7280;
     font-size: 1rem;
-    margin-bottom: 2rem;
+    margin: 0;
 }
 
-.loading-bar {
-    width: 200px;
-    height: 4px;
-    background: var(--border);
-    border-radius: 2px;
-    overflow: hidden;
-    margin: 0 auto;
+/* Book Animation */
+.book-animation {
+    perspective: 600px;
 }
 
-.loading-progress {
+.book {
+    width: 80px;
+    height: 100px;
+    position: relative;
+    transform-style: preserve-3d;
+}
+
+.book-cover {
+    position: absolute;
+    width: 100%;
     height: 100%;
-    background: var(--primary);
-    border-radius: 2px;
-    animation: progress 1.5s ease-in-out infinite;
+    background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+    border-radius: 4px 8px 8px 4px;
+    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
 }
 
-@keyframes progress {
-    0% {
-        width: 0%;
-        margin-left: 0%;
+.book-page {
+    position: absolute;
+    left: 50%;
+    width: 50%;
+    height: 96%;
+    top: 2%;
+    background: white;
+    border-radius: 0 4px 4px 0;
+    transform-origin: left center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    animation: pageFlip 1.5s ease-in-out infinite;
+}
+
+.book-page:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.book-page:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.book-page:nth-child(4) {
+    animation-delay: 0.3s;
+}
+
+@keyframes pageFlip {
+
+    0%,
+    100% {
+        transform: rotateY(0deg);
     }
 
     50% {
-        width: 70%;
-        margin-left: 15%;
-    }
-
-    100% {
-        width: 0%;
-        margin-left: 100%;
+        transform: rotateY(-150deg);
     }
 }

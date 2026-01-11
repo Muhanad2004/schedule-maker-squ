@@ -1,15 +1,15 @@
-import coursesData from '../data/courses.json';
-
 /**
- * Loads the static course data.
- * In a real app this might be an async fetch, but here we import the JSON directly.
- * @returns {Promise<Array>} List of courses
+ * Data loader - fetches course data
  */
-export const loadCourses = async () => {
-    // Simulating async behavior in case we want to switch to fetch later
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve(coursesData);
-        }, 100);
-    });
-};
+
+export async function loadCourses() {
+    const baseUrl = import.meta.env.BASE_URL || '/';
+    const url = `${baseUrl}data.json`.replace('//', '/');
+
+    const response = await fetch(url);
+    if (!response.ok) {
+        throw new Error(`Failed to load courses: ${response.status}`);
+    }
+
+    return response.json();
+}
