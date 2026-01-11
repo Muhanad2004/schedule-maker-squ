@@ -7,6 +7,8 @@ import ScheduleViewer from './components/ScheduleViewer';
 import FilterPanel from './components/FilterPanel';
 import { LanguageProvider, useLanguage } from './components/LanguageContext';
 import LanguageToggle from './components/LanguageToggle';
+import LoadingScreen from './components/LoadingScreen';
+import DataSourceBadge from './components/DataSourceBadge';
 import './index.css';
 import { ThemeProvider } from './components/ThemeContext';
 import ThemeToggle from './components/ThemeToggle';
@@ -207,12 +209,7 @@ export default function App() {
     }, [schedules.length]);
 
     if (loading) {
-      return (
-        <div className="loading-screen">
-          <div className="spinner" />
-          <p>{t.loadingCourses}</p>
-        </div>
-      );
+      return <LoadingScreen message={t.loadingCourses} />;
     }
 
     return (
@@ -223,6 +220,7 @@ export default function App() {
             <h1>{t.appTitle}</h1>
             <span className="divider" />
             <span className="subtitle">{t.university}</span>
+            <DataSourceBadge sourceDate="2026-01-11" />
           </div>
           <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
             <LanguageToggle />
