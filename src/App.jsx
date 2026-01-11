@@ -50,18 +50,10 @@ function AppContent() {
   // Load data on mount
   useEffect(() => {
     let mounted = true;
-    const startTime = Date.now();
 
     async function load() {
       try {
         const data = await loadCourses();
-
-        // Ensure minimum 2s loading for animation
-        const elapsed = Date.now() - startTime;
-        if (elapsed < 2000) {
-          await new Promise(r => setTimeout(r, 2000 - elapsed));
-        }
-
         if (mounted) {
           setAllCourses(data);
           setLoading(false);
