@@ -1,52 +1,32 @@
-# SQU Schedule Maker 📅
+# Schedule Maker 🎓
 
-A modern, fast, and user-friendly schedule maker for Sultan Qaboos University students. Built with React and Vite.
+**The ultimate schedule planning tool for Sultan Qaboos University students.**
+
+Designed to be simple, beautiful, and blazing fast. This tool helps you generate every possible non-conflicting schedule combination for your selected courses in milliseconds.
 
 ## ✨ Features
 
-- **Course Selection**: Easily search and add courses to your list.
-- **Smart Scheduling**: Automatically generates all possible conflict-free schedules based on your selected courses.
-- **Advanced Filtering**:
-  - **Instructor Filtering**: Pick your preferred instructors or exclude ones you want to avoid.
-  - **Time Blocking**: Click on the time grid to block specific days or hours (e.g., "No classes on Sunday" or "Free time Tuesday morning").
-- **Dark/Light Mode**: Toggle between a sleek dark mode (default) and a clean light mode. Your preference is saved automatically.
-- **Exam Schedule**: View exam dates and times for your selected courses at a glance.
-- **Responsive Design**: Works great on desktop, tablet, and mobile devices.
+-   **Instant Schedule Generation**: Uses a backtracking algorithm to find optimal schedules instantly.
+-   **"Fit Like a Glove" Design**: Two carefully crafted themes:
+    -   **Soft & Airy (Light)**: A clean, distraction-free cream and lavender interface.
+    -   **Earthy Dark**: A grounded, eye-friendly dark mode with gold and terracotta accents.
+-   **Smart Filtering**:
+    -   Block specific times (e.g., "No classes after 4 PM").
+    -   Filter by specific instructors.
+    -   Search courses by code or name with smart debounce.
+-   **Mobile Ready**: Fully responsive design that works perfectly on phones and tablets.
+-   **Data Saver**: Optimized assets and lazy-loading for minimal data usage.
+-   **Export Ready**: Download your perfect schedule as an image with one click.
+-   **Crash Proof**: Built-in error boundaries ensuring the app never leaves you staring at a blank screen.
 
-## 🚀 Live Demo
+## 🚀 How to Use
 
-Check out the live version here: [https://Muhanad2004.github.io/schedule-maker-squ/](https://Muhanad2004.github.io/schedule-maker-squ/)
+1.  **Search & Select**: Type a course code (e.g., `COMP3000`) and click to add it.
+2.  **Filter (Optional)**: Click "Filters" to block times you want free (like Sunday mornings).
+3.  **Generate**: Hit the "Generate" button.
+4.  **Explore**: Browse through valid schedule combinations using the arrow keys or buttons.
+5.  **Save**: Found the one? Click the download icon to save it.
 
-## 🛠️ Tech Stack
+---
 
-- **Framework**: [React](https://react.dev/) + [Vite](https://vitejs.dev/)
-- **Styling**: Standard CSS with CSS Variables for theming.
-- **Icons**: Custom SVG icons.
-- **Deployment**: GitHub Pages.
-
-## 🏃‍♂️ Running Locally
-
-1.  **Clone the repository**
-    ```bash
-    git clone https://github.com/Muhanad2004/schedule-maker-squ.git
-    cd schedule-maker-squ
-    ```
-
-2.  **Install dependencies**
-    ```bash
-    npm install
-    ```
-
-3.  **Start the development server**
-    ```bash
-    npm run dev
-    ```
-
-4.  **Build for production**
-    ```bash
-    npm run build
-    ```
-
-## 📝 License
-
-This project is open source and available for personal use.
+*Made with ❤️ by Muhanad for SQU Students.*
