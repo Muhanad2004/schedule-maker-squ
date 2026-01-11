@@ -29,12 +29,13 @@ export default function ScheduleViewer({
   const scheduleRef = useRef(null);
   const [examsExpanded, setExamsExpanded] = useState(false);
   const days = t?.days || ['Sun', 'Mon', 'Tue', 'Wed', 'Thu'];
+  const hours = Array.from({ length: END_HOUR - START_HOUR }, (_, i) => START_HOUR + i);
 
   const handleDownload = useCallback(async () => {
     if (!scheduleRef.current) return;
     try {
       const html2canvas = (await import('html2canvas')).default;
-      const canvas = await html2canvas(scheduleRef.current, { backgroundColor: null });
+      const canvas = await html2canvas(scheduleRef.current, { backgroundColor: '#fff' });
       const link = document.createElement('a');
       link.download = `schedule-${scheduleIndex + 1}.png`;
       link.href = canvas.toDataURL();
@@ -68,8 +69,6 @@ export default function ScheduleViewer({
     );
   }
 
-  const hours = Array.from({ length: END_HOUR - START_HOUR }, (_, i) => START_HOUR + i);
-
   return (
     <div className="schedule-viewer">
       <div className="schedule-header">
@@ -92,62 +91,62 @@ export default function ScheduleViewer({
       </div>
 
       <div className="schedule-calendar">
-        <div ref={scheduleRef} className="calendar-inner">
-          <div className="calendar-header">
-            <div className="time-label-header"></div>
-            {days.map(d => (
-              <div key={d} className="day-header">{d}</div>
+        <div ref={scheduleRef} className="calendar-grid-wrapper">
+          {/* Header Row */}
+          <div className="calendar-row header-row">
+            <div className="time-cell"></div>
+            {days.map(day => (
+              <div key={day} className="day-cell header-cell">{day}</div>
             ))}
           </div>
 
-          <div className="calendar-body">
-            <div className="time-labels">
-              {hours.map(h => (
-                <div key={h} className="time-label" style={{ height: HOUR_HEIGHT }}>
-                  {formatHour(h)}
-                </div>
-              ))}
-            </div>
-
-            {days.map((_, dayIdx) => (
-              <div key={dayIdx} className="day-column" style={{ height: hours.length * HOUR_HEIGHT }}>
-                {hours.map(h => (
-                  <div
-                    key={h}
-                    className="hour-line"
-                    style={{ top: (h - START_HOUR) * HOUR_HEIGHT }}
-                  />
-                ))}
-
-                {blocks.filter(b => b.day === dayIdx).map((block, i) => {
-                  const color = COLORS[block.colorIndex % COLORS.length];
-                  const height = getHeight(block.start, block.end);
-
-                  return (
-                    <div
-                      key={i}
-                      className="course-block"
-                      style={{
-                        top: getTop(block.start),
-                        height,
-                        background: color.bg,
-                        borderLeftColor: color.border,
-                      }}
-                      title={`${block.code} | ${block.instructor}`}
-                    >
-                      <div className="block-code">{block.code}/{block.section}</div>
-                      <div className="block-time">
-                        {formatTime(block.start)} - {formatTime(block.end)}
-                      </div>
-                      {height >= 60 && (
-                        <div className="block-instructor">{block.instructor}</div>
-                      )}
-                    </div>
-                  );
-                })}
+          {/* Hour Rows */}
+          {hours.map(hour => (
+            <div key={hour} className="calendar-row">
+              <div className="time-cell">
+                {formatHour(hour)}
               </div>
-            ))}
-          </div>
+              {days.map((_, dayIdx) => {
+                // Find blocks for this cell
+                const cellBlocks = blocks.filter(b => {
+                  const startHour = Math.floor(b.start / 60);
+                  return b.day === dayIdx && startHour === hour;
+                });
+
+                return (
+                  <div key={dayIdx} className="day-cell" style={{ height: HOUR_HEIGHT }}>
+                    {cellBlocks.map((block, i) => {
+                      const color = COLORS[block.colorIndex % COLORS.length];
+                      const height = getHeight(block.start, block.end);
+                      const offsetInHour = (block.start % 60) / 60 * HOUR_HEIGHT;
+
+                      return (
+                        <div
+                          key={i}
+                          className="course-block"
+                          style={{
+                            top: offsetInHour,
+                            height,
+                            backgroundColor: color.bg,
+                            borderLeftColor: color.border,
+                          }}
+                          title={`${block.code} | ${block.instructor}`}
+                        >
+                          <div className="block-code">{block.code}/{block.section}</div>
+                          <div className="block-time">
+                            {formatTime(block.start)} - {formatTime(block.end)}
+                          </div>
+                          {height >= 55 && (
+                            <div className="block-instructor">{block.instructor}</div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
         </div>
       </div>
 

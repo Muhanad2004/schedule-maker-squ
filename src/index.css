@@ -618,70 +618,54 @@ input {
   text-align: center;
 }
 
-/* Calendar */
+/* Calendar Grid - Row Based */
 .schedule-calendar {
   flex: 1;
   overflow: auto;
   padding: 1rem;
 }
 
-.calendar-inner {
+.calendar-grid-wrapper {
+  display: flex;
+  flex-direction: column;
   min-width: 600px;
 }
 
-.calendar-header {
+.calendar-row {
   display: grid;
-  grid-template-columns: 60px repeat(5, 1fr);
+  grid-template-columns: 70px repeat(5, 1fr);
   gap: 4px;
+}
+
+.calendar-row.header-row {
   margin-bottom: 4px;
 }
 
-.time-label-header {
-  /* Empty */
+.time-cell {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  text-align: right;
+  padding-right: 8px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding-top: 4px;
 }
 
-.day-header {
+.day-cell {
+  position: relative;
+  background: var(--bg);
+  border-radius: 4px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.day-cell.header-cell {
   text-align: center;
   font-weight: 600;
   padding: 0.5rem;
-  background: var(--bg);
-  border-radius: 6px;
-  color: var(--text);
-}
-
-.calendar-body {
-  display: grid;
-  grid-template-columns: 60px repeat(5, 1fr);
-  gap: 4px;
-}
-
-.time-labels {
-  display: flex;
-  flex-direction: column;
-}
-
-.time-label {
-  font-size: 0.75rem;
-  color: var(--text-dim);
-  display: flex;
-  align-items: flex-start;
-  padding-top: 4px;
-  padding-right: 8px;
-  justify-content: flex-end;
-}
-
-.day-column {
-  position: relative;
-  background: var(--bg);
-  border-radius: 6px;
-}
-
-.hour-line {
-  position: absolute;
-  left: 0;
-  right: 0;
-  border-top: 1px solid var(--card-border);
-  pointer-events: none;
+  background: var(--primary-bg);
+  color: var(--primary);
+  border: none;
 }
 
 .course-block {
@@ -695,6 +679,7 @@ input {
   overflow: hidden;
   border-left: 4px solid;
   box-shadow: var(--shadow);
+  z-index: 10;
 }
 
 .block-code {
