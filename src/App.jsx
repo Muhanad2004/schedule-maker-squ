@@ -53,8 +53,12 @@ export default function App() {
       const loadData = async () => {
         setLoading(true);
         try {
-          const response = await fetch('./data.json');
-          if (!response.ok) throw new Error('Failed to load data');
+          // Use BASE_URL to ensure correct path on GitHub Pages
+          const baseUrl = import.meta.env.BASE_URL;
+          const dataUrl = `${baseUrl}data.json`.replace('//', '/');
+
+          const response = await fetch(dataUrl);
+          if (!response.ok) throw new Error(`Failed to load data: ${response.status}`);
           const jsonData = await response.json();
 
           // Ensure minimum 2 seconds loading for the "cool" effect
@@ -69,6 +73,11 @@ export default function App() {
           }
         } catch (err) {
           console.error("Error loading data:", err);
+          // Still wait even on error so it doesn't flash
+          const elapsedTime = Date.now() - startTime;
+          const remainingTime = Math.max(0, 2000 - elapsedTime);
+          await new Promise(resolve => setTimeout(resolve, remainingTime));
+
           if (isMounted) setLoading(false);
         }
       };

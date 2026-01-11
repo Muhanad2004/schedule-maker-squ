@@ -48,7 +48,7 @@ export default function FilterPanel({ blockedSlots, onToggleSlot, onToggleDay, o
                   <div key={`label-${hour}`} className="grid-time-label">
                     {formatHour(hour)}
                   </div>
-                  {DAYS.map((_, dayIdx) => {
+                  {days.map((_, dayIdx) => {
                     const key = `${dayIdx}-${hour}`;
                     const isBlocked = blockedSlots.includes(key);
                     return (
@@ -56,7 +56,7 @@ export default function FilterPanel({ blockedSlots, onToggleSlot, onToggleDay, o
                         key={key}
                         className={`grid-cell ${isBlocked ? 'blocked' : ''}`}
                         onClick={() => onToggleSlot(dayIdx, hour)}
-                        title={`Click to block ${DAYS[dayIdx]} ${hour}:00 classes`}
+                        title={`Click to block ${days[dayIdx]} ${hour}:00 classes`}
                       >
                         {isBlocked ? '✕' : ''}
                       </div>

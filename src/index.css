@@ -409,7 +409,14 @@ body.font-arabic {
   padding: 0.75rem;
   background: transparent;
   color: var(--text-dim);
+  border: none;
+  /* Reset btn border */
   border-bottom: 2px solid transparent;
+  border-radius: 0;
+  /* Reset btn radius */
+  box-shadow: none;
+  /* Reset btn shadow */
+  font-weight: 500;
 }
 
 .selector-tabs .tab.active {
@@ -584,6 +591,8 @@ body.font-arabic {
   padding: 1rem;
   background: transparent;
   color: var(--text);
+  border: none;
+  box-shadow: none;
 }
 
 .filter-toggle:hover {
@@ -626,6 +635,31 @@ body.font-arabic {
   grid-template-columns: 45px repeat(5, 1fr);
   gap: 2px;
   width: 100%;
+}
+
+.filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+}
+
+.reset-btn {
+  background: transparent;
+  color: var(--primary);
+  border: none;
+  font-size: 0.8rem;
+  padding: 0;
+  text-decoration: underline;
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.reset-btn:hover {
+  color: var(--primary-hover);
+  background: transparent;
+  transform: none;
+  box-shadow: none;
 }
 
 .grid-corner {
@@ -708,6 +742,8 @@ body.font-arabic {
   color: var(--text-dim);
   text-align: center;
   padding: 1rem;
+  /* Ensure it fills the container */
+  min-height: 400px;
 }
 
 .schedule-empty .empty-icon {
