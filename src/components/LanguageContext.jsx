@@ -28,7 +28,8 @@ const translations = {
         confirmResetFilters: 'Reset all time filters?',
         days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu'],
         filterHint: 'Click on a day header to block the whole day, or click specific hours to block them.',
-        welcomeMessage: 'Welcome! Search for courses on the left to get started.'
+        welcomeMessage: 'Welcome! Search for courses on the left to get started.',
+        dataUpdate: 'Data Last Update -> 11th of January 2026'
     },
     ar: {
         searchPlaceholder: 'ابحث عن المقررات (مثال: COMP3000)...',
@@ -53,7 +54,8 @@ const translations = {
         confirmResetFilters: 'إعادة تعيين جميع الفلاتر؟',
         days: ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس'],
         filterHint: 'اضغط على رأس العمود لحظر يوم كامل، أو اضغط على ساعات محددة لحظرها.',
-        welcomeMessage: 'مرحباً! ابدأ بالبحث عن المقررات في القائمة الجانبية.'
+        welcomeMessage: 'مرحباً! ابدأ بالبحث عن المقررات في القائمة الجانبية.',
+        dataUpdate: 'اخر تحديث للجداول: 11 يناير 2026'
     }
 };
 
