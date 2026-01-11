@@ -92,6 +92,7 @@ body {
 
 body.rtl {
   direction: rtl;
+  font-family: 'Calibri', 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* === Button Reset & Base Styles === */

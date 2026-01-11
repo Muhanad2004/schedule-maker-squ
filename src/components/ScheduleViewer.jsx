@@ -105,6 +105,11 @@ export default function ScheduleViewer({
     );
   }
 
+  // Determine direction for arrows
+  const isRtl = document.body.classList.contains('rtl');
+  const prevIcon = isRtl ? '→' : '←';
+  const nextIcon = isRtl ? '←' : '→';
+
   return (
     <div className="schedule-viewer">
       {/* Header */}
@@ -114,9 +119,9 @@ export default function ScheduleViewer({
           <span className="text-dim"> {t.of} {totalSchedules}</span>
         </h2>
         <div className="schedule-controls">
-          <button className="nav-btn" onClick={onPrev} disabled={scheduleIndex === 0}>←</button>
+          <button className="nav-btn" onClick={onPrev} disabled={scheduleIndex === 0}>{prevIcon}</button>
           <span className="schedule-counter">{scheduleIndex + 1} / {totalSchedules}</span>
-          <button className="nav-btn" onClick={onNext} disabled={scheduleIndex === totalSchedules - 1}>→</button>
+          <button className="nav-btn" onClick={onNext} disabled={scheduleIndex === totalSchedules - 1}>{nextIcon}</button>
           <button className="icon-btn" onClick={handleDownload} title={t.saveImage}>📷</button>
         </div>
       </div>
