@@ -198,6 +198,8 @@ input {
   border-radius: 10px;
   font-weight: 600;
   transition: all 0.2s;
+  min-width: 140px;
+  text-align: center;
 }
 
 .primary-btn:hover:not(:disabled) {
@@ -227,6 +229,13 @@ input {
   background: var(--primary-bg);
   color: var(--primary);
   border-color: var(--primary);
+}
+
+/* Fixed width language button - consistent in both languages */
+.lang-btn {
+  width: 70px;
+  font-size: 0.85rem;
+  font-weight: 500;
 }
 
 .nav-btn {
