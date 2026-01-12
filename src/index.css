@@ -733,16 +733,16 @@ input {
 
 .block-code {
   font-weight: 700;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
 }
 
 .block-time {
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   opacity: 0.9;
 }
 
 .block-instructor {
-  font-size: 0.6rem;
+  font-size: 0.7rem;
   opacity: 0.8;
   white-space: nowrap;
   overflow: hidden;

@@ -2,7 +2,7 @@ import { useMemo, useRef, useCallback, useState } from 'react';
 import { formatTime } from '../utils/timeUtils';
 
 const START_HOUR = 8;
-const END_HOUR = 18; // 6 PM
+const END_HOUR = 19; // 7 PM (to show 6 PM row for classes ending at 6:05)
 const HOUR_HEIGHT = 60;
 const TOTAL_HEIGHT = (END_HOUR - START_HOUR) * HOUR_HEIGHT;
 
