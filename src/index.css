@@ -147,6 +147,11 @@ input {
   font-size: 0.9rem;
 }
 
+.made-by {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+}
+
 .data-badge {
   display: flex;
   align-items: center;

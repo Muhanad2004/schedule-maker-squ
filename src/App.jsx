@@ -195,7 +195,7 @@ function AppContent() {
       <header className="app-header">
         <div className="header-left">
           <h1 className="logo">Schedule Maker</h1>
-          <span className="subtitle">Sultan Qaboos University</span>
+          <span className="made-by">Made with ❤️ by Muhanad @ SQU</span>
           <DataSourceBadge sourceDate="2026-01-11" />
         </div>
         <div className="header-right">
