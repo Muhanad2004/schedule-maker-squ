@@ -800,30 +800,4 @@ input {
   }
 }
 
-/* === Export Mode === */
-.export-mode {
-  background: white !important;
-  color: black !important;
-  border: 1px solid #000 !important;
-}
-
-.export-mode .calendar-header-row,
-.export-mode .day-column,
-.export-mode .time-slot,
-.export-mode .day-header {
-  background: white !important;
-  color: black !important;
-  box-shadow: none !important;
-  border-color: #000 !important;
-}
-
-.export-mode .course-block {
-  border: 1px solid #000 !important;
-  color: black !important;
-  background: white !important;
-  box-shadow: none !important;
-}
-
-.export-mode .hour-line {
-  background: #ccc !important;
-}
+/* Export mode styles removed - schedule now exports with theme colors */

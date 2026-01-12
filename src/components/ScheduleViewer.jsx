@@ -36,24 +36,54 @@ export default function ScheduleViewer({
   const handleDownload = useCallback(async () => {
     if (!scheduleRef.current) return;
 
-    // Add export class for clean B&W look
-    scheduleRef.current.classList.add('export-mode');
-
     try {
       const html2canvas = (await import('html2canvas')).default;
+
+      // A4 landscape dimensions at 96 DPI: 1123 x 794 pixels
+      const A4_LANDSCAPE_WIDTH = 1123;
+      const A4_LANDSCAPE_HEIGHT = 794;
+
+      // Get the current element dimensions
+      const elementWidth = scheduleRef.current.offsetWidth;
+      const elementHeight = scheduleRef.current.offsetHeight;
+
+      // Calculate scale to fit A4 landscape while maintaining aspect ratio
+      const scaleX = A4_LANDSCAPE_WIDTH / elementWidth;
+      const scaleY = A4_LANDSCAPE_HEIGHT / elementHeight;
+      const scale = Math.min(scaleX, scaleY);
+
+      // Get computed background color from theme
+      const computedStyle = getComputedStyle(scheduleRef.current);
+      const bgColor = computedStyle.backgroundColor || '#ffffff';
+
       const canvas = await html2canvas(scheduleRef.current, {
-        backgroundColor: '#ffffff',
-        scale: 2 // Improve quality
+        backgroundColor: bgColor,
+        scale: scale,
+        width: elementWidth,
+        height: elementHeight
       });
+
+      // Create final A4 canvas and center the schedule
+      const finalCanvas = document.createElement('canvas');
+      finalCanvas.width = A4_LANDSCAPE_WIDTH;
+      finalCanvas.height = A4_LANDSCAPE_HEIGHT;
+      const ctx = finalCanvas.getContext('2d');
+
+      // Fill background with theme color
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(0, 0, A4_LANDSCAPE_WIDTH, A4_LANDSCAPE_HEIGHT);
+
+      // Center the scaled schedule on the canvas
+      const offsetX = (A4_LANDSCAPE_WIDTH - canvas.width) / 2;
+      const offsetY = (A4_LANDSCAPE_HEIGHT - canvas.height) / 2;
+      ctx.drawImage(canvas, offsetX, offsetY);
+
       const link = document.createElement('a');
       link.download = `schedule-${scheduleIndex + 1}.png`;
-      link.href = canvas.toDataURL();
+      link.href = finalCanvas.toDataURL();
       link.click();
     } catch (error) {
       console.error('Download failed:', error);
-    } finally {
-      // Remove export class
-      scheduleRef.current.classList.remove('export-mode');
     }
   }, [scheduleIndex]);
 
