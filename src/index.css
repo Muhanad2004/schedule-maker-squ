@@ -37,28 +37,28 @@
 }
 
 [data-theme="dark"] {
-  /* Dark Theme: Neon Night */
-  --bg: #090040;
-  --bg-soft: #0D0050;
-  --card: #471396;
-  --card-border: #5A1DB0;
+  /* Dark Theme: Ocean Depth */
+  --bg: #1B3C53;
+  --bg-soft: #234C6A;
+  --card: #234C6A;
+  --card-border: #456882;
 
-  --text: #F0E6FF;
-  --text-dim: #C9B8E8;
+  --text: #E3E3E3;
+  --text-dim: #A8B8C4;
 
-  --primary: #FFCC00;
-  --primary-hover: #FFD633;
-  --primary-bg: rgba(255, 204, 0, 0.15);
+  --primary: #6BB8E8;
+  --primary-hover: #8CCBF0;
+  --primary-bg: rgba(107, 184, 232, 0.15);
 
-  --secondary: #B13BFF;
-  --accent: #FFCC00;
+  --secondary: #456882;
+  --accent: #6BB8E8;
 
-  --success: #00E676;
-  --error: #FF5252;
-  --warning: #FFCC00;
+  --success: #4CAF50;
+  --error: #EF5350;
+  --warning: #FFB74D;
 
-  --shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 24px rgba(177, 59, 255, 0.3);
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.45);
 }
 
 /* === Reset === */
