@@ -7,9 +7,9 @@ export const useTheme = () => useContext(ThemeContext);
 export function ThemeProvider({ children }) {
     const [theme, setTheme] = useState(() => {
         try {
-            return localStorage.getItem('theme') || 'theme1';
+            return localStorage.getItem('theme') || 'light';
         } catch {
-            return 'theme1';
+            return 'light';
         }
     });
 
@@ -23,7 +23,7 @@ export function ThemeProvider({ children }) {
     }, [theme]);
 
     const toggleTheme = () => {
-        setTheme(prev => prev === 'theme1' ? 'theme2' : 'theme1');
+        setTheme(prev => prev === 'light' ? 'dark' : 'light');
     };
 
     return (

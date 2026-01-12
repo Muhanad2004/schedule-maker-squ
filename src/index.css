@@ -1,43 +1,13 @@
 /* ============================================
    SCHEDULE MAKER - Complete Stylesheet
-   Themes: Forest Earth (Theme 1) | Desert Dusk (Theme 2)
+   Themes: Desert Dusk (Light) | Neon Night (Dark)
    ============================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&display=swap');
 
 /* === Theme Variables === */
 :root {
-  /* Theme 1 (Default): Forest Earth */
-  --bg: #2C3930;
-  --bg-soft: #354139;
-  --card: #3F4F44;
-  --card-border: #4A5D4F;
-
-  --text: #DCD7C9;
-  --text-dim: #B8B3A6;
-
-  --primary: #A27B5C;
-  --primary-hover: #B8896A;
-  --primary-bg: rgba(162, 123, 92, 0.2);
-
-  --secondary: #4A5D4F;
-  --accent: #C9B99A;
-
-  --success: #7CB342;
-  --error: #E57373;
-  --warning: #FFB74D;
-
-  --radius: 8px;
-  --radius-lg: 12px;
-  --shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.35);
-
-  --font-main: 'Alexandria', system-ui, sans-serif;
-  --font-display: 'Alexandria', var(--font-main);
-}
-
-[data-theme="theme2"] {
-  /* Theme 2: Desert Dusk */
+  /* Light Theme (Default): Desert Dusk */
   --bg: #F5DEB3;
   --bg-soft: #EED9A8;
   --card: #FAEBD7;
@@ -57,8 +27,38 @@
   --error: #CD5C5C;
   --warning: #DAA520;
 
+  --radius: 8px;
+  --radius-lg: 12px;
   --shadow: 0 2px 8px rgba(93, 64, 55, 0.15);
   --shadow-lg: 0 8px 24px rgba(93, 64, 55, 0.2);
+
+  --font-main: 'Alexandria', system-ui, sans-serif;
+  --font-display: 'Alexandria', var(--font-main);
+}
+
+[data-theme="dark"] {
+  /* Dark Theme: Neon Night */
+  --bg: #090040;
+  --bg-soft: #0D0050;
+  --card: #471396;
+  --card-border: #5A1DB0;
+
+  --text: #F0E6FF;
+  --text-dim: #C9B8E8;
+
+  --primary: #FFCC00;
+  --primary-hover: #FFD633;
+  --primary-bg: rgba(255, 204, 0, 0.15);
+
+  --secondary: #B13BFF;
+  --accent: #FFCC00;
+
+  --success: #00E676;
+  --error: #FF5252;
+  --warning: #FFCC00;
+
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(177, 59, 255, 0.3);
 }
 
 /* === Reset === */
@@ -125,6 +125,8 @@ input {
   align-items: center;
   flex-wrap: wrap;
   gap: 1rem;
+  /* Keep header layout consistent in both LTR and RTL */
+  direction: ltr;
 }
 
 .header-left {

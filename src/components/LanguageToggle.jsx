@@ -5,11 +5,11 @@ export default function LanguageToggle() {
 
     return (
         <button
-            className="icon-btn lang-toggle-btn"
+            className="icon-btn"
             onClick={toggleLang}
             title={lang === 'en' ? 'التبديل إلى العربية' : 'Switch to English'}
         >
-            {lang === 'en' ? '🇴🇲' : '🇬🇧'}
+            {lang === 'en' ? 'عربي' : 'EN'}
         </button>
     );
 }

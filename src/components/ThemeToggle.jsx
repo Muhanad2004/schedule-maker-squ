@@ -5,11 +5,11 @@ export default function ThemeToggle() {
 
     return (
         <button
-            className="icon-btn theme-toggle-btn"
+            className="icon-btn"
             onClick={toggleTheme}
-            title={theme === 'theme1' ? 'Switch to Theme 2' : 'Switch to Theme 1'}
+            title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
         >
-            {theme === 'theme1' ? '🌲' : '🏜️'}
+            {theme === 'light' ? '🌙' : '☀️'}
         </button>
     );
 }
