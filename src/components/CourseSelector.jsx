@@ -13,6 +13,7 @@ export default function CourseSelector({
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [activeTab, setActiveTab] = useState('all');
+  const [prevSearchTerm, setPrevSearchTerm] = useState('');
 
   // Debounce search
   useEffect(() => {
@@ -20,12 +21,13 @@ export default function CourseSelector({
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Auto-switch to 'all' tab when user starts typing
+  // Auto-switch to 'all' tab when user starts typing (empty -> non-empty transition)
   useEffect(() => {
-    if (searchTerm.trim() && activeTab === 'selected') {
+    if (!prevSearchTerm.trim() && searchTerm.trim() && activeTab === 'selected') {
       setActiveTab('all');
     }
-  }, [searchTerm, activeTab]);
+    setPrevSearchTerm(searchTerm);
+  }, [searchTerm]);
 
   const filteredCourses = useMemo(() => {
     if (!debouncedSearch.trim()) return [];

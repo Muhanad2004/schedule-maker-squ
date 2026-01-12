@@ -10,6 +10,7 @@ import LoadingScreen from './components/LoadingScreen';
 import CourseSelector from './components/CourseSelector';
 import FilterPanel from './components/FilterPanel';
 import ScheduleViewer from './components/ScheduleViewer';
+import ExamWarnings from './components/ExamWarnings';
 import DataSourceBadge from './components/DataSourceBadge';
 
 // LocalStorage helpers
@@ -238,6 +239,10 @@ function AppContent() {
             totalSchedules={schedules.length}
             onNext={() => setScheduleIndex(i => Math.min(schedules.length - 1, i + 1))}
             onPrev={() => setScheduleIndex(i => Math.max(0, i - 1))}
+            t={t}
+          />
+          <ExamWarnings
+            schedule={schedules[scheduleIndex]}
             t={t}
           />
         </section>

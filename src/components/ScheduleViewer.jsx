@@ -1,10 +1,5 @@
-import { useMemo, useRef, useCallback, useState } from 'react';
+import React, { useMemo, useRef, useCallback, useState } from 'react';
 import { formatTime } from '../utils/timeUtils';
-
-const START_HOUR = 8;
-const END_HOUR = 19; // 7 PM (to show 6 PM row for classes ending at 6:05)
-const HOUR_HEIGHT = 60;
-const TOTAL_HEIGHT = (END_HOUR - START_HOUR) * HOUR_HEIGHT;
 
 const COLORS = [
   { bg: '#3b82f6', border: '#2563eb' },
@@ -17,7 +12,13 @@ const COLORS = [
   { bg: '#84cc16', border: '#65a30d' },
 ];
 
-const formatHour = (h) => `${h % 12 || 12} ${h < 12 ? 'AM' : 'PM'}`;
+const formatHour = (minutes) => {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const displayHour = hours % 12 || 12;
+  return mins > 0 ? `${displayHour}:${mins.toString().padStart(2, '0')} ${period}` : `${displayHour}:00 ${period}`;
+};
 
 export default function ScheduleViewer({
   schedule,
@@ -28,10 +29,6 @@ export default function ScheduleViewer({
   t
 }) {
   const scheduleRef = useRef(null);
-  const [examsExpanded, setExamsExpanded] = useState(false);
-  // Ensure we always have days, even if translation fails
-  const days = (t && t.days && t.days.length === 5) ? t.days : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu'];
-  const hours = Array.from({ length: END_HOUR - START_HOUR }, (_, i) => START_HOUR + i);
 
   const handleDownload = useCallback(async () => {
     if (!scheduleRef.current) return;
@@ -87,41 +84,64 @@ export default function ScheduleViewer({
     }
   }, [scheduleIndex]);
 
-  // Process all blocks from all sections
-  const blocksByDay = useMemo(() => {
-    if (!schedule) return {};
+  // Calculate unique time slots from all classes
+  const timeSlots = useMemo(() => {
+    if (!schedule) return [];
 
-    const result = { 0: [], 1: [], 2: [], 3: [], 4: [] };
+    const slots = new Set();
 
-    schedule.forEach((section, sectionIdx) => {
-      const slots = section.parsedSlots || [];
-      slots.forEach(slot => {
-        if (slot.day >= 0 && slot.day < 5) {
-          result[slot.day].push({
-            ...section,
-            ...slot,
-            colorIndex: sectionIdx
-          });
-        }
+    schedule.forEach(section => {
+      const parsedSlots = section.parsedSlots || [];
+      parsedSlots.forEach(slot => {
+        // Add time slot as "start-end" string
+        slots.add(`${slot.start}-${slot.end}`);
       });
     });
 
-    return result;
+    // Convert to array and sort
+    const slotArray = Array.from(slots).map(slotStr => {
+      const [start, end] = slotStr.split('-').map(Number);
+      return { start, end, key: slotStr };
+    });
+
+    slotArray.sort((a, b) => a.start - b.start);
+    return slotArray;
   }, [schedule]);
 
-  // Calculate position for a block
-  const getBlockStyle = (block) => {
-    const top = ((block.start - START_HOUR * 60) / 60) * HOUR_HEIGHT;
-    const height = ((block.end - block.start) / 60) * HOUR_HEIGHT;
-    const color = COLORS[block.colorIndex % COLORS.length];
+  // Organize classes by day and time slot
+  const gridData = useMemo(() => {
+    if (!schedule) return {};
 
-    return {
-      top: `${top}px`,
-      height: `${Math.max(height, 30)}px`,
-      backgroundColor: color.bg,
-      borderLeftColor: color.border
-    };
-  };
+    const data = {};
+
+    schedule.forEach((section, sectionIdx) => {
+      const parsedSlots = section.parsedSlots || [];
+      parsedSlots.forEach(slot => {
+        const slotKey = `${slot.start}-${slot.end}`;
+        const day = slot.day;
+
+        if (!data[slotKey]) {
+          data[slotKey] = {};
+        }
+        if (!data[slotKey][day]) {
+          data[slotKey][day] = [];
+        }
+
+        data[slotKey][day].push({
+          ...section,
+          ...slot,
+          colorIndex: sectionIdx
+        });
+      });
+    });
+
+    return data;
+  }, [schedule]);
+
+  const days = useMemo(() => {
+    const isRtl = document.body.classList.contains('rtl');
+    return isRtl ? t.days.slice().reverse() : t.days;
+  }, [t.days]);
 
   if (!schedule) {
     return (
@@ -156,82 +176,61 @@ export default function ScheduleViewer({
         </div>
       </div>
 
-      {/* Calendar */}
+      {/* Grid Schedule */}
       <div className="schedule-calendar">
-        <div ref={scheduleRef} className="calendar-container">
-          {/* Day Headers */}
-          <div className="calendar-header-row">
-            <div className="time-gutter"></div>
-            {days.map(day => (
-              <div key={day} className="day-header">{day}</div>
-            ))}
-          </div>
+        <div ref={scheduleRef} className="schedule-grid">
+          {/* Header Row */}
+          <div className="grid-header time-header">{t.days ? 'Time/Day' : 'Time/Day'}</div>
+          {days.map((day, idx) => (
+            <div key={idx} className="grid-header">{day}</div>
+          ))}
 
-          {/* Grid Body */}
-          <div className="calendar-body">
-            {/* Time Gutter */}
-            <div className="time-gutter">
-              {hours.map(h => (
-                <div key={h} className="time-slot" style={{ height: HOUR_HEIGHT }}>
-                  {formatHour(h)}
+          {/* Time Slot Rows */}
+          {timeSlots.map(slot => {
+            const slotKey = slot.key;
+            const slotData = gridData[slotKey] || {};
+
+            return (
+              <React.Fragment key={slotKey}>
+                {/* Time Cell */}
+                <div className="time-cell">
+                  {formatHour(slot.start)} - {formatHour(slot.end)}
                 </div>
-              ))}
-            </div>
 
-            {/* Day Columns */}
-            {days.map((_, dayIdx) => (
-              <div key={dayIdx} className="day-column" style={{ height: TOTAL_HEIGHT }}>
-                {/* Hour grid lines */}
-                {hours.map((h, i) => (
-                  <div
-                    key={h}
-                    className="hour-line"
-                    style={{ top: i * HOUR_HEIGHT }}
-                  />
-                ))}
+                {/* Day Cells */}
+                {[0, 1, 2, 3, 4].map(dayIdx => {
+                  const actualDayIdx = isRtl ? 4 - dayIdx : dayIdx;
+                  const classes = slotData[actualDayIdx] || [];
 
-                {/* Course blocks for this day */}
-                {(blocksByDay[dayIdx] || []).map((block, i) => (
-                  <div
-                    key={`${block.code}-${block.section}-${i}`}
-                    className="course-block"
-                    style={getBlockStyle(block)}
-                    title={`${block.code} - ${block.instructor}`}
-                  >
-                    <div className="block-code">{block.code}/{block.section}</div>
-                    <div className="block-time">
-                      {formatTime(block.start)} - {formatTime(block.end)}
+                  return (
+                    <div key={dayIdx} className="day-cell">
+                      {classes.map((cls, clsIdx) => {
+                        const color = COLORS[cls.colorIndex % COLORS.length];
+                        return (
+                          <div
+                            key={clsIdx}
+                            className="class-block"
+                            style={{
+                              backgroundColor: color.bg,
+                              borderLeftColor: color.border
+                            }}
+                            title={`${cls.code} - ${cls.instructor}`}
+                          >
+                            <div className="block-code">{cls.code}/{cls.section}</div>
+                            <div className="block-time">
+                              {formatTime(cls.start)} - {formatTime(cls.end)}
+                            </div>
+                            <div className="block-instructor">{cls.instructor}</div>
+                          </div>
+                        );
+                      })}
                     </div>
-                    <div className="block-instructor">{block.instructor}</div>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
+                  );
+                })}
+              </React.Fragment>
+            );
+          })}
         </div>
-      </div>
-
-      {/* Exam Footer */}
-      <div className="schedule-footer">
-        <div className="footer-toggle" onClick={() => setExamsExpanded(!examsExpanded)}>
-          <span>📋 {t.examFooter}</span>
-          <span>{examsExpanded ? '▼' : '▲'}</span>
-        </div>
-
-        {examsExpanded && (
-          <div className="exam-list">
-            {schedule.map((section, idx) => (
-              <div
-                key={idx}
-                className="exam-item"
-                style={{ borderLeftColor: COLORS[idx % COLORS.length].bg }}
-              >
-                <span className="exam-code">{section.code}</span>
-                <span className="exam-date">{section.exam || 'TBA'}</span>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );

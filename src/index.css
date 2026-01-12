@@ -834,4 +834,123 @@ input {
   }
 }
 
-/* Export mode styles removed - schedule now exports with theme colors */
+/* Export mode styles removed - schedule now exports with theme colors *//* === Schedule Grid Layout === */
+.schedule-grid {
+    display: grid;
+    grid-template-columns: 150px repeat(5, 1fr);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--card);
+}
+
+.grid-header {
+    background: var(--primary);
+    color: white;
+    padding: 0.75rem;
+    font-weight: 600;
+    text-align: center;
+    border-bottom: 1px solid var(--card-border);
+}
+
+.time-header {
+    background: var(--secondary);
+}
+
+.time-cell {
+    background: var(--bg-soft);
+    padding: 0.75rem 0.5rem;
+    border-right: 1px solid var(--card-border);
+    border-bottom: 1px solid var(--card-border);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-align: center;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.day-cell {
+    border-right: 1px solid var(--card-border);
+    border-bottom: 1px solid var(--card-border);
+    padding: 0.5rem;
+    min-height: 60px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.day-cell:last-child {
+    border-right: none;
+}
+
+.class-block {
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin-bottom: 0.25rem;
+    border-left: 4px solid rgba(0, 0, 0, 0.2);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    color: white;
+}
+
+.class-block:last-child {
+    margin-bottom: 0;
+}
+
+/* === Exam Warnings === */
+.exam-warnings-container {
+    margin-top: 1.5rem;
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--card-border);
+    overflow: hidden;
+}
+
+.exam-warnings-header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--card-border);
+}
+
+.exam-warnings-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--text);
+}
+
+.exam-conflicts {
+    padding: 1rem;
+    background: var(--warning-bg, rgba(255, 187, 77, 0.1));
+}
+
+.exam-warning-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: var(--card);
+    border-left: 4px solid var(--warning);
+    border-radius: 4px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.exam-warning-item:last-child {
+    margin-bottom: 0;
+}
+
+.warning-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.warning-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.conflict-courses {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+}
