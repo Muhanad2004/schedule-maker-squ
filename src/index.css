@@ -744,9 +744,7 @@ input {
 .block-instructor {
   font-size: 0.7rem;
   opacity: 0.8;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  word-wrap: break-word;
 }
 
 /* Footer */
