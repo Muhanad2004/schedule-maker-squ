@@ -89,6 +89,32 @@ body.rtl {
   /* Alexandria supports both Arabic and Latin scripts */
 }
 
+/* === Custom Scrollbars === */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--card-border) var(--bg-soft);
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--bg-soft);
+  border-radius: 5px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--card-border);
+  border-radius: 5px;
+  border: 2px solid var(--bg-soft);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
 /* === Button Reset & Base Styles === */
 button {
   font-family: inherit;

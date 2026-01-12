@@ -20,6 +20,13 @@ export default function CourseSelector({
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
+  // Auto-switch to 'all' tab when user starts typing
+  useEffect(() => {
+    if (searchTerm.trim() && activeTab === 'selected') {
+      setActiveTab('all');
+    }
+  }, [searchTerm, activeTab]);
+
   const filteredCourses = useMemo(() => {
     if (!debouncedSearch.trim()) return [];
     const terms = debouncedSearch.toLowerCase().split(/\s+/).filter(Boolean);
