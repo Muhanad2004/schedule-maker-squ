@@ -9,7 +9,11 @@ export default function ThemeToggle() {
             onClick={toggleTheme}
             title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
         >
-            {theme === 'light' ? '🌙' : '☀️'}
+            {theme === 'light' ? (
+                <img src="https://emojicdn.elk.sh/🌙?style=apple" alt="Dark Mode" className="emoji-icon" />
+            ) : (
+                <img src="https://emojicdn.elk.sh/☀️?style=apple" alt="Light Mode" className="emoji-icon" />
+            )}
         </button>
     );
 }

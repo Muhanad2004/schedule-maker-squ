@@ -29,6 +29,7 @@ export default function ScheduleViewer({
   t
 }) {
   const scheduleRef = useRef(null);
+  const [examsExpanded, setExamsExpanded] = useState(false);
 
   const handleDownload = useCallback(async () => {
     if (!scheduleRef.current) return;
@@ -36,20 +37,16 @@ export default function ScheduleViewer({
     try {
       const html2canvas = (await import('html2canvas')).default;
 
-      // A4 landscape dimensions at 96 DPI: 1123 x 794 pixels
       const A4_LANDSCAPE_WIDTH = 1123;
       const A4_LANDSCAPE_HEIGHT = 794;
 
-      // Get the current element dimensions
       const elementWidth = scheduleRef.current.offsetWidth;
       const elementHeight = scheduleRef.current.offsetHeight;
 
-      // Calculate scale to fit A4 landscape while maintaining aspect ratio
       const scaleX = A4_LANDSCAPE_WIDTH / elementWidth;
       const scaleY = A4_LANDSCAPE_HEIGHT / elementHeight;
       const scale = Math.min(scaleX, scaleY);
 
-      // Get computed background color from theme
       const computedStyle = getComputedStyle(scheduleRef.current);
       const bgColor = computedStyle.backgroundColor || '#ffffff';
 
@@ -60,17 +57,14 @@ export default function ScheduleViewer({
         height: elementHeight
       });
 
-      // Create final A4 canvas and center the schedule
       const finalCanvas = document.createElement('canvas');
       finalCanvas.width = A4_LANDSCAPE_WIDTH;
       finalCanvas.height = A4_LANDSCAPE_HEIGHT;
       const ctx = finalCanvas.getContext('2d');
 
-      // Fill background with theme color
       ctx.fillStyle = bgColor;
       ctx.fillRect(0, 0, A4_LANDSCAPE_WIDTH, A4_LANDSCAPE_HEIGHT);
 
-      // Center the scaled schedule on the canvas
       const offsetX = (A4_LANDSCAPE_WIDTH - canvas.width) / 2;
       const offsetY = (A4_LANDSCAPE_HEIGHT - canvas.height) / 2;
       ctx.drawImage(canvas, offsetX, offsetY);
@@ -84,7 +78,7 @@ export default function ScheduleViewer({
     }
   }, [scheduleIndex]);
 
-  // Calculate unique time slots from all classes
+  // Calculate unique time slots from all classes - sorted by start time, then duration (shorter first)
   const timeSlots = useMemo(() => {
     if (!schedule) return [];
 
@@ -93,18 +87,23 @@ export default function ScheduleViewer({
     schedule.forEach(section => {
       const parsedSlots = section.parsedSlots || [];
       parsedSlots.forEach(slot => {
-        // Add time slot as "start-end" string
         slots.add(`${slot.start}-${slot.end}`);
       });
     });
 
-    // Convert to array and sort
     const slotArray = Array.from(slots).map(slotStr => {
       const [start, end] = slotStr.split('-').map(Number);
-      return { start, end, key: slotStr };
+      return { start, end, key: slotStr, duration: end - start };
     });
 
-    slotArray.sort((a, b) => a.start - b.start);
+    // Sort by start time, then by duration (shorter first)
+    slotArray.sort((a, b) => {
+      if (a.start === b.start) {
+        return a.duration - b.duration;
+      }
+      return a.start - b.start;
+    });
+
     return slotArray;
   }, [schedule]);
 
@@ -138,16 +137,51 @@ export default function ScheduleViewer({
     return data;
   }, [schedule]);
 
-  const days = useMemo(() => {
-    const isRtl = document.body.classList.contains('rtl');
-    return isRtl ? t.days.slice().reverse() : t.days;
-  }, [t.days]);
+  // Detect exam conflicts (2+ exams on same day)
+  const examConflicts = useMemo(() => {
+    if (!schedule) return { count: 0, dates: [] };
+
+    const examsByDate = {};
+    schedule.forEach(section => {
+      const examFull = section.exam;
+      if (examFull && examFull !== 'TBA') {
+        // Extract date part (e.g., "21/05/2026 THU")
+        const dateMatch = examFull.match(/^(\d{2}\/\d{2}\/\d{4}\s+\w+)/);
+        const datePart = dateMatch ? dateMatch[1] : examFull;
+
+        // Extract time part (e.g., "08:00:00 - 11:00:00")
+        const timeMatch = examFull.match(/(\d{2}:\d{2}:\d{2}\s*-\s*\d{2}:\d{2}:\d{2})/);
+        const timePart = timeMatch ? timeMatch[1] : '';
+
+        if (!examsByDate[datePart]) {
+          examsByDate[datePart] = [];
+        }
+        examsByDate[datePart].push({
+          code: section.code,
+          time: timePart
+        });
+      }
+    });
+
+    const conflictDates = [];
+    Object.entries(examsByDate).forEach(([date, exams]) => {
+      if (exams.length >= 2) {
+        conflictDates.push({ date, exams });
+      }
+    });
+
+    return { count: conflictDates.length, dates: conflictDates };
+  }, [schedule]);
+
+  const days = t.days;
 
   if (!schedule) {
     return (
       <div className="schedule-viewer">
         <div className="schedule-empty">
-          <span className="empty-icon">📅</span>
+          <span className="empty-icon">
+            <img src="https://emojicdn.elk.sh/📅?style=apple" alt="Schedule" style={{ width: '48px', height: '48px' }} />
+          </span>
           <h3>{t.schedule}</h3>
           <p>{t.noSchedules}</p>
         </div>
@@ -155,7 +189,6 @@ export default function ScheduleViewer({
     );
   }
 
-  // Determine direction for arrows
   const isRtl = document.body.classList.contains('rtl');
   const prevIcon = isRtl ? '→' : '←';
   const nextIcon = isRtl ? '←' : '→';
@@ -172,7 +205,9 @@ export default function ScheduleViewer({
           <button className="nav-btn" onClick={onPrev} disabled={scheduleIndex === 0}>{prevIcon}</button>
           <span className="schedule-counter">{scheduleIndex + 1} / {totalSchedules}</span>
           <button className="nav-btn" onClick={onNext} disabled={scheduleIndex === totalSchedules - 1}>{nextIcon}</button>
-          <button className="icon-btn" onClick={handleDownload} title={t.saveImage}>📷</button>
+          <button className="icon-btn" onClick={handleDownload} title={t.saveImage}>
+            <img src="https://emojicdn.elk.sh/📷?style=apple" alt="Save" className="emoji-icon" />
+          </button>
         </div>
       </div>
 
@@ -180,7 +215,7 @@ export default function ScheduleViewer({
       <div className="schedule-calendar">
         <div ref={scheduleRef} className="schedule-grid">
           {/* Header Row */}
-          <div className="grid-header time-header">{t.days ? 'Time/Day' : 'Time/Day'}</div>
+          <div className="grid-header time-header">Time/Day</div>
           {days.map((day, idx) => (
             <div key={idx} className="grid-header">{day}</div>
           ))}
@@ -199,11 +234,10 @@ export default function ScheduleViewer({
 
                 {/* Day Cells */}
                 {[0, 1, 2, 3, 4].map(dayIdx => {
-                  const actualDayIdx = isRtl ? 4 - dayIdx : dayIdx;
-                  const classes = slotData[actualDayIdx] || [];
+                  const classes = slotData[dayIdx] || [];
 
                   return (
-                    <div key={dayIdx} className="day-cell">
+                    <div key={dayIdx} className={`day-cell ${classes.length > 0 ? 'has-class' : ''}`}>
                       {classes.map((cls, clsIdx) => {
                         const color = COLORS[cls.colorIndex % COLORS.length];
                         return (
@@ -217,7 +251,7 @@ export default function ScheduleViewer({
                             title={`${cls.code} - ${cls.instructor}`}
                           >
                             <div className="block-code">{cls.code}/{cls.section}</div>
-                            <div className="block-time">
+                            <div className="block-time" style={{ direction: 'ltr' }}>
                               {formatTime(cls.start)} - {formatTime(cls.end)}
                             </div>
                             <div className="block-instructor">{cls.instructor}</div>
@@ -231,6 +265,64 @@ export default function ScheduleViewer({
             );
           })}
         </div>
+      </div>
+
+      {/* Exam Footer - Dropdown */}
+      <div className="schedule-footer">
+        <div className="footer-toggle" onClick={() => setExamsExpanded(!examsExpanded)}>
+          <div className="footer-group">
+            <span>
+              <img src="https://emojicdn.elk.sh/📋?style=apple" alt="Exam" className="emoji-icon" style={{ marginRight: '0.4rem', marginLeft: '0.4rem' }} />
+              {t.examFooter}
+            </span>
+            {examConflicts.count > 0 && (
+              <span className="conflict-pill">
+                {t.conflict}
+              </span>
+            )}
+          </div>
+          <span>{examsExpanded ? '▼' : '▲'}</span>
+        </div>
+
+        {examsExpanded && (
+          <div className="exam-details-container">
+            {/* Conflict warnings */}
+            {examConflicts.dates.length > 0 && (
+              <div className="exam-conflicts-section">
+                {examConflicts.dates.map((conflict, idx) => (
+                  <div key={idx} className="exam-conflict-warning">
+                    <div className="conflict-header">
+                      <img src="https://emojicdn.elk.sh/⚠️?style=apple" alt="Warning" className="emoji-icon" />
+                      {t.multipleExamsOn} {conflict.date}:
+                    </div>
+                    <div className="conflict-courses">
+                      {conflict.exams.map((exam, examIdx) => (
+                        <div key={examIdx} className="conflict-course-item">
+                          {exam.code} → {exam.time}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+                <div className="exam-divider"></div>
+              </div>
+            )}
+
+            {/* All exams */}
+            <div className="exam-list">
+              {schedule.map((section, idx) => (
+                <div
+                  key={idx}
+                  className="exam-item"
+                  style={{ borderLeftColor: COLORS[idx % COLORS.length].bg }}
+                >
+                  <span className="exam-code">{section.code}</span>
+                  <span className="exam-date">{section.exam || 'TBA'}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

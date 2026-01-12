@@ -10,7 +10,6 @@ import LoadingScreen from './components/LoadingScreen';
 import CourseSelector from './components/CourseSelector';
 import FilterPanel from './components/FilterPanel';
 import ScheduleViewer from './components/ScheduleViewer';
-import ExamWarnings from './components/ExamWarnings';
 import DataSourceBadge from './components/DataSourceBadge';
 
 // LocalStorage helpers
@@ -196,7 +195,7 @@ function AppContent() {
       <header className="app-header">
         <div className="header-left">
           <h1 className="logo">Schedule Maker</h1>
-          <span className="made-by">Made with ❤️ by Muhanad @ SQU</span>
+          <span className="made-by">Made with <img src="https://emojicdn.elk.sh/❤️?style=apple" alt="love" className="emoji-icon" /> by <span className="fancy-name">Muhanad</span> @ SQU</span>
           <DataSourceBadge sourceDate="2026-01-11" />
         </div>
         <div className="header-right">
@@ -239,10 +238,6 @@ function AppContent() {
             totalSchedules={schedules.length}
             onNext={() => setScheduleIndex(i => Math.min(schedules.length - 1, i + 1))}
             onPrev={() => setScheduleIndex(i => Math.max(0, i - 1))}
-            t={t}
-          />
-          <ExamWarnings
-            schedule={schedules[scheduleIndex]}
             t={t}
           />
         </section>

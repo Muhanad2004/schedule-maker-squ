@@ -3,62 +3,69 @@
    Themes: Desert Dusk (Light) | Neon Night (Dark)
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700&display=swap');
 
 /* === Theme Variables === */
 :root {
-  /* Light Theme (Default): Desert Dusk */
-  --bg: #F5DEB3;
-  --bg-soft: #EED9A8;
-  --card: #FAEBD7;
-  --card-border: #DEB887;
+  /* Light Theme: Clean Corporate Blue */
+  --bg: #ffffff;
+  --bg-soft: #f1f5f9;
+  --card: #ffffff;
+  --card-border: #e2e8f0;
 
-  --text: #5D4037;
-  --text-dim: #8D6E63;
+  --text: #0f172a;
+  --text-dim: #64748b;
 
-  --primary: #8B4513;
-  --primary-hover: #A0522D;
-  --primary-bg: rgba(139, 69, 19, 0.12);
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-bg: #eff6ff;
 
-  --secondary: #BC8F8F;
-  --accent: #CD853F;
+  --secondary: #475569;
+  --accent: #0ea5e9;
 
-  --success: #6B8E23;
-  --error: #CD5C5C;
-  --warning: #DAA520;
+  --success: #22c55e;
+  --error: #ef4444;
+  --warning: #f59e0b;
+  --warning-bg: #fffbeb;
 
   --radius: 8px;
   --radius-lg: 12px;
-  --shadow: 0 2px 8px rgba(93, 64, 55, 0.15);
-  --shadow-lg: 0 8px 24px rgba(93, 64, 55, 0.2);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 
-  --font-main: 'Alexandria', system-ui, sans-serif;
-  --font-display: 'Alexandria', var(--font-main);
+  --font-main: 'Noto Sans', system-ui, sans-serif;
+  --font-display: 'Noto Sans', system-ui, sans-serif;
+}
+
+[dir="rtl"] {
+  --font-main: 'Noto Sans Arabic', system-ui, sans-serif;
+  --font-display: 'Noto Sans Arabic', system-ui, sans-serif;
 }
 
 [data-theme="dark"] {
-  /* Dark Theme: Ocean Depth */
-  --bg: #1B3C53;
-  --bg-soft: #234C6A;
-  --card: #234C6A;
-  --card-border: #456882;
+  /* Dark Theme: Midnight Abyss */
+  --bg: #0f172a;
+  --bg-soft: #1e293b;
+  --card: #1e293b;
+  --card-border: #334155;
 
-  --text: #E3E3E3;
-  --text-dim: #A8B8C4;
+  --text: #f8fafc;
+  --text-dim: #94a3b8;
 
-  --primary: #6BB8E8;
-  --primary-hover: #8CCBF0;
-  --primary-bg: rgba(107, 184, 232, 0.15);
+  --primary: #3b82f6;
+  --primary-hover: #60a5fa;
+  --primary-bg: rgba(59, 130, 246, 0.15);
 
-  --secondary: #456882;
-  --accent: #6BB8E8;
+  --secondary: #94a3b8;
+  --accent: #38bdf8;
 
-  --success: #4CAF50;
-  --error: #EF5350;
-  --warning: #FFB74D;
+  --success: #4ade80;
+  --error: #f87171;
+  --warning: #fbbf24;
+  --warning-bg: rgba(245, 158, 11, 0.15);
 
-  --shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.5);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.6);
 }
 
 /* === Reset === */
@@ -86,7 +93,7 @@ body {
 
 body.rtl {
   direction: rtl;
-  /* Alexandria supports both Arabic and Latin scripts */
+  /* Noto Sans supports both Arabic and Latin scripts */
 }
 
 /* === Custom Scrollbars === */
@@ -174,8 +181,17 @@ input {
 }
 
 .made-by {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
   color: var(--text-dim);
+}
+
+.fancy-name {
+  font-weight: 700;
+  color: var(--text);
 }
 
 .data-badge {
@@ -222,6 +238,7 @@ input {
 }
 
 /* === Buttons === */
+
 .primary-btn {
   background: var(--primary);
   color: white;
@@ -264,9 +281,23 @@ input {
 
 /* Fixed width language button - consistent in both languages */
 .lang-btn {
-  width: 70px;
+  width: auto;
+  min-width: 40px;
   font-size: 0.85rem;
   font-weight: 500;
+}
+
+.lang-flag {
+  vertical-align: middle;
+  border-radius: 4px;
+  /* Optional rounded corners for flags */
+}
+
+.emoji-icon {
+  height: 1.2em;
+  width: auto;
+  vertical-align: middle;
+  display: inline-block;
 }
 
 .nav-btn {
@@ -668,94 +699,7 @@ input {
   text-align: center;
 }
 
-/* Calendar Grid */
-.schedule-calendar {
-  flex: 1;
-  overflow: auto;
-  padding: 1rem;
-}
-
-.calendar-container {
-  min-width: 650px;
-  border: 1px solid var(--card-border);
-}
-
-.calendar-header-row {
-  display: grid;
-  grid-template-columns: 70px repeat(5, 1fr);
-  gap: 1px;
-  background: var(--card-border);
-  border-bottom: 1px solid var(--card-border);
-}
-
-.day-header {
-  text-align: center;
-  font-weight: 600;
-  padding: 0.5rem;
-  background: var(--card);
-  /* Flat header background */
-  color: var(--text);
-  /* No border radius for table look */
-}
-
-.calendar-body {
-  display: grid;
-  grid-template-columns: 70px repeat(5, 1fr);
-  background: var(--card-border);
-  /* Grid lines */
-  gap: 1px;
-}
-
-.time-gutter {
-  display: flex;
-  flex-direction: column;
-  background: var(--bg);
-}
-
-.time-slot {
-  font-size: 0.75rem;
-  color: var(--text-dim);
-  text-align: right;
-  padding-right: 8px;
-  padding-top: 2px;
-  background: var(--card);
-  /* Match cells or distinct */
-  border-bottom: 1px solid var(--card-border);
-}
-
-.day-column {
-  position: relative;
-  background: var(--bg);
-}
-
-.hour-line {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: var(--card-border);
-  opacity: 0.3;
-  /* Subtle guides */
-}
-
-.course-block {
-  position: absolute;
-  left: 0;
-  /* Full fill */
-  right: 0;
-  border-radius: 0;
-  /* Sharp corners */
-  padding: 4px 6px;
-  color: white;
-  font-size: 0.7rem;
-  overflow: hidden;
-  border-left: 4px solid rgba(0, 0, 0, 0.2);
-  box-shadow: none;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
+/* Calendar Grid - Legacy classes removed */
 
 .block-code {
   font-weight: 700;
@@ -773,6 +717,7 @@ input {
   word-wrap: break-word;
 }
 
+
 /* Footer */
 .schedule-footer {
   border-top: 1px solid var(--card-border);
@@ -781,21 +726,47 @@ input {
 .footer-toggle {
   padding: 0.75rem 1rem;
   display: flex;
+  align-items: center;
   justify-content: space-between;
   cursor: pointer;
   font-weight: 500;
+}
+
+.footer-group {
+  display: flex;
+  align-items: center;
 }
 
 .footer-toggle:hover {
   background: var(--bg);
 }
 
+/* Exam Details Expanded */
+.exam-details-container {
+  padding: 0.75rem;
+  max-height: 400px;
+  overflow-y: auto;
+  border-top: 1px solid var(--card-border);
+}
+
+.exam-conflicts-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.exam-divider {
+  height: 1px;
+  background: var(--card-border);
+  margin: 0.5rem 0;
+  width: 100%;
+}
+
 .exam-list {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  padding: 1rem;
-  border-top: 1px solid var(--card-border);
 }
 
 .exam-item {
@@ -834,123 +805,183 @@ input {
   }
 }
 
-/* Export mode styles removed - schedule now exports with theme colors *//* === Schedule Grid Layout === */
+/* Export mode styles removed - schedule now exports with theme colors */
+/* === Schedule Grid Layout === */
 .schedule-grid {
-    display: grid;
-    grid-template-columns: 150px repeat(5, 1fr);
-    border: 1px solid var(--card-border);
-    border-radius: var(--radius);
-    overflow: hidden;
-    background: var(--card);
+  display: grid;
+  grid-template-columns: 150px repeat(5, 1fr);
+  border: 1px solid var(--card-border);
+  border-radius: 0 !important;
+  overflow: hidden;
+  background: var(--card);
 }
 
 .grid-header {
-    background: var(--primary);
-    color: white;
-    padding: 0.75rem;
-    font-weight: 600;
-    text-align: center;
-    border-bottom: 1px solid var(--card-border);
+  background: var(--bg-soft);
+  color: var(--text);
+  padding: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+  border-bottom: 1px solid var(--card-border);
+  border-right: 1px solid var(--card-border);
+  border-radius: 0 !important;
+}
+
+.grid-header:last-child {
+  border-right: none;
 }
 
 .time-header {
-    background: var(--secondary);
+  background: var(--bg-soft);
+  border-radius: 0 !important;
 }
 
 .time-cell {
-    background: var(--bg-soft);
-    padding: 0.75rem 0.5rem;
-    border-right: 1px solid var(--card-border);
-    border-bottom: 1px solid var(--card-border);
-    font-size: 0.85rem;
-    font-weight: 500;
-    text-align: center;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
+  background: var(--bg-soft);
+  padding: 0.75rem 0.5rem;
+  border-right: 1px solid var(--card-border);
+  border-bottom: 1px solid var(--card-border);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: center;
+  white-space: nowrap;
+  direction: ltr;
+  /* Force LTR for times */
+  border-radius: 0 !important;
 }
 
 .day-cell {
-    border-right: 1px solid var(--card-border);
-    border-bottom: 1px solid var(--card-border);
-    padding: 0.5rem;
-    min-height: 60px;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
+  border-right: 1px solid var(--card-border);
+  border-bottom: 1px solid var(--card-border);
+  padding: 0;
+  min-height: 60px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  background: var(--bg);
+  border-radius: 0 !important;
 }
 
 .day-cell:last-child {
-    border-right: none;
+  border-right: none;
+}
+
+.day-cell.has-class {
+  padding: 0;
 }
 
 .class-block {
-    padding: 0.5rem;
-    border-radius: 4px;
-    margin-bottom: 0.25rem;
-    border-left: 4px solid rgba(0, 0, 0, 0.2);
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    color: white;
+  padding: 0.5rem;
+  border-radius: 0 !important;
+  margin: 0;
+  border-left: 4px solid rgba(0, 0, 0, 0.2);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  color: white;
+  height: 100%;
+  box-sizing: border-box;
+  text-align: left;
 }
 
 .class-block:last-child {
-    margin-bottom: 0;
+  margin-bottom: 0;
+}
+
+/* Conflict Pill */
+.conflict-pill {
+  background: var(--card-border);
+  color: var(--text);
+  padding: 0.25rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-inline-start: 0.5rem;
+}
+
+/* Exam Conflict Warning in dropdown */
+.exam-conflict-warning {
+  background: rgba(255, 193, 7, 0.15);
+  border-left: 4px solid var(--warning);
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.conflict-header {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.conflict-courses {
+  margin-inline-start: 1.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.conflict-course-item {
+  font-size: 0.85rem;
+  opacity: 0.9;
 }
 
 /* === Exam Warnings === */
 .exam-warnings-container {
-    margin-top: 1.5rem;
-    background: var(--card);
-    border-radius: var(--radius);
-    border: 1px solid var(--card-border);
-    overflow: hidden;
+  margin-top: 1.5rem;
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 1px solid var(--card-border);
+  overflow: hidden;
 }
 
 .exam-warnings-header {
-    padding: 1rem;
-    border-bottom: 1px solid var(--card-border);
+  padding: 1rem;
+  border-bottom: 1px solid var(--card-border);
 }
 
 .exam-warnings-header h3 {
-    margin: 0;
-    font-size: 1.1rem;
-    color: var(--text);
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--text);
 }
 
 .exam-conflicts {
-    padding: 1rem;
-    background: var(--warning-bg, rgba(255, 187, 77, 0.1));
+  padding: 1rem;
+  background: var(--warning-bg, rgba(255, 187, 77, 0.1));
 }
 
 .exam-warning-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.75rem;
-    padding: 0.75rem;
-    margin-bottom: 0.5rem;
-    background: var(--card);
-    border-left: 4px solid var(--warning);
-    border-radius: 4px;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  background: var(--card);
+  border-left: 4px solid var(--warning);
+  border-radius: 4px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .exam-warning-item:last-child {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .warning-icon {
-    font-size: 1.25rem;
-    flex-shrink: 0;
+  font-size: 1.25rem;
+  flex-shrink: 0;
 }
 
 .warning-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .conflict-courses {
-    color: var(--text-dim);
-    font-size: 0.9rem;
+  color: var(--text-dim);
+  font-size: 0.9rem;
 }

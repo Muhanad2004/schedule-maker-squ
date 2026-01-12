@@ -21,9 +21,9 @@ export default function CourseSelector({
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Auto-switch to 'all' tab when user starts typing (empty -> non-empty transition)
+  // Auto-switch to 'all' tab when user types
   useEffect(() => {
-    if (!prevSearchTerm.trim() && searchTerm.trim() && activeTab === 'selected') {
+    if (searchTerm.trim() && activeTab === 'selected') {
       setActiveTab('all');
     }
     setPrevSearchTerm(searchTerm);
