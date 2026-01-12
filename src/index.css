@@ -1,70 +1,64 @@
 /* ============================================
    SCHEDULE MAKER - Complete Stylesheet
-   Themes: Sand & Stone (Light) | Midnight Slate (Dark)
+   Themes: Forest Earth (Theme 1) | Desert Dusk (Theme 2)
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;500;600;700&family=Outfit:wght@500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&display=swap');
 
 /* === Theme Variables === */
 :root {
-  /* Light Theme (Default): Sand & Stone */
-  --bg: #EAE0D5;
-  /* Derived from #D3C3B9 (Lighter) */
-  --card: #FFFFFF;
-  --card-border: #E5E7EB;
+  /* Theme 1 (Default): Forest Earth */
+  --bg: #2C3930;
+  --bg-soft: #354139;
+  --card: #3F4F44;
+  --card-border: #4A5D4F;
 
-  --text: #161616;
-  /* #161616 (Black) */
-  --text-dim: #6B7280;
+  --text: #DCD7C9;
+  --text-dim: #B8B3A6;
 
-  --primary: #B58863;
-  /* #B58863 (Tan) */
-  --primary-hover: #9E7452;
-  --primary-bg: #F5EBE5;
-  /* Light Tan */
+  --primary: #A27B5C;
+  --primary-hover: #B8896A;
+  --primary-bg: rgba(162, 123, 92, 0.2);
 
-  --secondary: #A79E9C;
-  /* #A79E9C (Grey) */
-  --accent: #D3C3B9;
-  /* #D3C3B9 (Beige) */
+  --secondary: #4A5D4F;
+  --accent: #C9B99A;
 
-  --success: #10B981;
-  --error: #EF4444;
-  --warning: #F59E0B;
+  --success: #7CB342;
+  --error: #E57373;
+  --warning: #FFB74D;
 
-  --radius: 12px;
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  --radius: 8px;
+  --radius-lg: 12px;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.35);
 
-  --font-main: 'Inter', system-ui, sans-serif;
-  --font-display: 'Outfit', var(--font-main);
+  --font-main: 'Alexandria', system-ui, sans-serif;
+  --font-display: 'Alexandria', var(--font-main);
 }
 
-[data-theme="dark"] {
-  /* Dark Theme: Midnight Slate */
-  --bg: #161616;
-  /* #161616 (Black) */
-  --card: #10232A;
-  /* #10232A (Deep Teal) */
-  --card-border: #3D4D55;
-  /* #3D4D55 (Slate) */
+[data-theme="theme2"] {
+  /* Theme 2: Desert Dusk */
+  --bg: #F5DEB3;
+  --bg-soft: #EED9A8;
+  --card: #FAEBD7;
+  --card-border: #DEB887;
 
-  --text: #D3C3B9;
-  /* #D3C3B9 (Beige) */
-  --text-dim: #A79E9C;
-  /* #A79E9C (Grey) */
+  --text: #5D4037;
+  --text-dim: #8D6E63;
 
-  --primary: #B58863;
-  /* #B58863 (Tan) - Persistent Accent */
-  --primary-hover: #CD9A70;
-  --primary-bg: rgba(181, 136, 99, 0.15);
+  --primary: #8B4513;
+  --primary-hover: #A0522D;
+  --primary-bg: rgba(139, 69, 19, 0.12);
 
-  --secondary: #3D4D55;
-  /* #3D4D55 (Slate) */
-  --accent: #A79E9C;
+  --secondary: #BC8F8F;
+  --accent: #CD853F;
 
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+  --success: #6B8E23;
+  --error: #CD5C5C;
+  --warning: #DAA520;
+
+  --shadow: 0 2px 8px rgba(93, 64, 55, 0.15);
+  --shadow-lg: 0 8px 24px rgba(93, 64, 55, 0.2);
 }
 
 /* === Reset === */
@@ -92,7 +86,7 @@ body {
 
 body.rtl {
   direction: rtl;
-  font-family: 'Calibri', 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /* Alexandria supports both Arabic and Latin scripts */
 }
 
 /* === Button Reset & Base Styles === */
