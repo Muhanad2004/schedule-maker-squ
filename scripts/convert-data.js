@@ -60,14 +60,22 @@ function convertData() {
 
     console.log(`Total raw rows extracted: ${allRawRows.length}`);
 
-    const finalData = consolidateCourses(allRawRows);
+    const courses = consolidateCourses(allRawRows);
 
-    validateData(finalData);
+    validateData(courses);
 
-    fs.writeFileSync(OUTPUT_FILE, JSON.stringify(finalData, null, 2));
+    // Create versioned output with timestamp
+    const version = Date.now().toString();
+    const output = {
+        version: version,
+        courses: courses
+    };
+
+    fs.writeFileSync(OUTPUT_FILE, JSON.stringify(output, null, 2));
     console.log(`\\nData converted successfully! Saved to ${OUTPUT_FILE}`);
-    console.log(`Total courses: ${finalData.length}`);
-    console.log(`Total sections: ${finalData.reduce((acc, c) => acc + c.sections.length, 0)}`);
+    console.log(`Version: ${version}`);
+    console.log(`Total courses: ${courses.length}`);
+    console.log(`Total sections: ${courses.reduce((acc, c) => acc + c.sections.length, 0)}`);
 }
 
 function readExcelFile(filePath) {
@@ -146,6 +154,13 @@ function readExcelFile(filePath) {
 }
 
 function consolidateCourses(rawRows) {
+    // Helper: Check if instructor is TBA
+    const isTBA = (name) => {
+        if (!name) return true;
+        const n = name.toUpperCase();
+        return n.includes('TO BE') || n.includes('ANNOUNCED') || n.includes('TBA') || n === '';
+    };
+
     // Step 1: Group by Course Code
     const courseMap = {};
 
@@ -177,6 +192,12 @@ function consolidateCourses(rawRows) {
         }
 
         const sect = course.sections[sectionKey];
+
+        // INSTRUCTOR FIX: Prefer real instructor name over TBA
+        // If current instructor is TBA but new one isn't, use the new one
+        if (isTBA(sect.instructor) && !isTBA(instructor)) {
+            sect.instructor = instructor;
+        }
 
         // Add time slot if not already present
         if (time && !sect.times.includes(time)) {
