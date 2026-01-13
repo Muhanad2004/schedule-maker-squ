@@ -30,7 +30,6 @@ export default function ScheduleViewer({
   onNext,
   onPrev,
   t
-  t
 }) {
   const { language } = useLanguage();
   const scheduleRef = useRef(null);
