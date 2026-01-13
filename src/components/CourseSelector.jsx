@@ -37,8 +37,7 @@ export default function CourseSelector({
     return courses.filter(c => {
       const code = c.code.toLowerCase();
       const name = c.name.toLowerCase();
-      const nameAr = (c.name_ar || '').toLowerCase();
-      return terms.every(term => code.includes(term) || name.includes(term) || nameAr.includes(term));
+      return terms.every(term => code.includes(term) || name.includes(term));
     });
   }, [courses, debouncedSearch]);
 
@@ -113,19 +112,8 @@ const SearchResults = memo(function SearchResults({ searchTerm, courses, isSelec
           onClick={() => onToggle(course)}
         >
           <div className="course-info">
-            <div className="course-code">
-              {course.code}
-              {course.type && (
-                <span className={`course-type-pill ${course.type.toLowerCase()}`}>
-                  {language === 'ar'
-                    ? (course.type === 'UR' ? 'م.ج' : 'إ.ج')
-                    : course.type}
-                </span>
-              )}
-            </div>
-            <div className="course-name">
-              {language === 'ar' ? (course.name_ar || course.name) : course.name}
-            </div>
+            <div className="course-code">{course.code}</div>
+            <div className="course-name">{course.name}</div>
           </div>
           <span className="course-action">{isSelected(course.id) ? '✓' : '+'}</span>
         </div>
@@ -150,10 +138,8 @@ function SelectedCourses({ courses, instructorFilters, onToggle, onToggleInstruc
       {courses.map(course => {
         const instructorMap = {};
         course.sections.forEach(s => {
-          // Use localized instructor name for grouping
-          const instName = language === 'ar' ? (s.instructor_ar || s.instructor) : s.instructor;
-          if (!instructorMap[instName]) instructorMap[instName] = [];
-          instructorMap[instName].push(s);
+          if (!instructorMap[s.instructor]) instructorMap[s.instructor] = [];
+          instructorMap[s.instructor].push(s);
         });
         const instructors = Object.keys(instructorMap);
         const allowed = instructorFilters[course.id];
@@ -162,19 +148,8 @@ function SelectedCourses({ courses, instructorFilters, onToggle, onToggleInstruc
           <div key={course.id} className="selected-course-card">
             <div className="card-header">
               <div>
-                <div className="course-code">
-                  {course.code}
-                  {course.type && (
-                    <span className={`course-type-pill ${course.type.toLowerCase()}`}>
-                      {language === 'ar'
-                        ? (course.type === 'UR' ? 'م.ج' : 'إ.ج')
-                        : course.type}
-                    </span>
-                  )}
-                </div>
-                <div className="course-name">
-                  {language === 'ar' ? (course.name_ar || course.name) : course.name}
-                </div>
+                <div className="course-code">{course.code}</div>
+                <div className="course-name">{course.name}</div>
               </div>
               <button className="remove-btn" onClick={() => onToggle(course)}>✕</button>
             </div>

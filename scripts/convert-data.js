@@ -3,7 +3,6 @@ import path from 'path';
 import * as XLSX_Module from 'xlsx';
 import { fileURLToPath } from 'url';
 
-// Handle ESM/CommonJS interop for XLSX
 const XLSX = XLSX_Module.default || XLSX_Module;
 
 const __filename = fileURLToPath(import.meta.url);
@@ -12,6 +11,27 @@ const __dirname = path.dirname(__filename);
 const RAW_DATA_DIR = path.join(__dirname, '../raw-data');
 const OUTPUT_FILE = path.join(__dirname, '../public/data.json');
 
+/**
+ * CORRECTED ALGORITHM:
+ * 
+ * KEY INSIGHT: Section Number is the ONLY unique identifier for a section.
+ * 
+ * - Each row in Excel = ONE class meeting
+ * - Multiple rows with SAME section number = multiple meetings per week for THAT section
+ * - Section 01 and Section 02 are ALWAYS different, even if same instructor/time
+ * 
+ * UNIQUE KEY: CourseCode + SectionNumber
+ * 
+ * Example:
+ *   SOCY1005 Section 01 - Mon 10-11:50 - Instructor A
+ *   SOCY1005 Section 02 - Mon 10-11:50 - Instructor A
+ *   → These are TWO different sections (user can only pick one)
+ * 
+ *   EDUC2010 Section 100 - Sun 8-9:50 - Instructor A
+ *   EDUC2010 Section 100 - Tue 8-9:50 - Instructor A  
+ *   → This is ONE section with 2 meetings per week
+ */
+
 function convertData() {
     if (!fs.existsSync(RAW_DATA_DIR)) {
         console.error(`Directory not found: ${RAW_DATA_DIR}`);
@@ -19,48 +39,35 @@ function convertData() {
     }
 
     const allFiles = fs.readdirSync(RAW_DATA_DIR);
-    // Find English files as the base
-    const englishFiles = allFiles.filter(file =>
-        (file.endsWith('_en.xls') || file.endsWith('_en.xlsx')) && !file.startsWith('~$')
+    const excelFiles = allFiles.filter(file =>
+        (file.endsWith('.xls') || file.endsWith('.xlsx')) && !file.startsWith('~$')
     );
 
-    if (englishFiles.length === 0) {
-        console.warn('No English Excel files found in raw-data directory.');
+    if (excelFiles.length === 0) {
+        console.warn('No Excel files found in raw-data directory.');
         return;
     }
 
-    let allCourses = [];
+    let allRawRows = [];
 
-    englishFiles.forEach(enFile => {
-        // Find corresponding Arabic file
-        // Assumption: filename structure is "name_en.xls" -> "name_ar.xls"
-        const ext = path.extname(enFile);
-        const baseName = enFile.substring(0, enFile.lastIndexOf('_en'));
-        const arFile = `${baseName}_ar${ext}`;
+    excelFiles.forEach(file => {
+        const filePath = path.join(RAW_DATA_DIR, file);
+        console.log(`Processing: ${file}`);
 
-        const enPath = path.join(RAW_DATA_DIR, enFile);
-        const arPath = path.join(RAW_DATA_DIR, arFile);
-
-        console.log(`Processing Pair: ${enFile} + ${fs.existsSync(arPath) ? arFile : '(No Arabic Match)'}`);
-
-        // Determine Course Type
-        let courseType = null;
-        if (enFile.toLowerCase().includes('university_requirements')) courseType = 'UR';
-        if (enFile.toLowerCase().includes('university_electives')) courseType = 'UE';
-
-        // Read Data
-        const enRows = readExcelFile(enPath);
-        const arRows = fs.existsSync(arPath) ? readExcelFile(arPath) : [];
-
-        // Merge
-        const mergedCourses = mergeData(enRows, arRows, courseType);
-        allCourses = allCourses.concat(mergedCourses);
+        const rows = readExcelFile(filePath);
+        allRawRows = allRawRows.concat(rows);
     });
 
-    const finalData = consolidateCourses(allCourses);
+    console.log(`Total raw rows extracted: ${allRawRows.length}`);
+
+    const finalData = consolidateCourses(allRawRows);
+
+    validateData(finalData);
 
     fs.writeFileSync(OUTPUT_FILE, JSON.stringify(finalData, null, 2));
-    console.log(`Data converted successfully! Saved to ${OUTPUT_FILE}`);
+    console.log(`\\nData converted successfully! Saved to ${OUTPUT_FILE}`);
+    console.log(`Total courses: ${finalData.length}`);
+    console.log(`Total sections: ${finalData.reduce((acc, c) => acc + c.sections.length, 0)}`);
 }
 
 function readExcelFile(filePath) {
@@ -77,30 +84,30 @@ function readExcelFile(filePath) {
     // Find header row
     for (let i = 0; i < Math.min(rows.length, 25); i++) {
         const rowStr = rows[i].map(c => String(c).toLowerCase()).join(' ');
-        if ((rowStr.includes('course') && (rowStr.includes('code') || rowStr.includes('title'))) ||
-            (rowStr.includes('رمز') && rowStr.includes('المقرر'))) {
-
+        if (rowStr.includes('course') && (rowStr.includes('code') || rowStr.includes('title') || rowStr.includes('name'))) {
             headerRowIndex = i;
+
             rows[i].forEach((cell, idx) => {
                 const val = String(cell).toLowerCase().trim();
-                // Basic clean mapping
-                if (val.includes('code') || val.includes('رمز')) columnIndices.code = idx;
-                else if (val.includes('name') || val.includes('title') || val.includes('اسم')) columnIndices.name = idx;
-                else if (val.includes('titie')) columnIndices.name = idx; // Common typo in SQU files
-                else if (val.includes('sect') || val.includes('شعبة')) columnIndices.section = idx;
-                else if (val.includes('instructor') || val.includes('محاضر') || val.includes('مدرس')) columnIndices.instructor = idx;
-                else if (val.includes('day') || val.includes('يوم') || val.includes('أيام')) columnIndices.day = idx;
-                else if (val.includes('from') || val.includes('من')) columnIndices.from = idx;
-                else if (val.includes('to') || val.includes('إلى') || val.includes('الى')) columnIndices.to = idx;
-                else if (val.includes('hall') || val.includes('room') || val.includes('قاعة')) columnIndices.room = idx;
-                else if (val.includes('exam') || val.includes('امتحان') || val.includes('اختبار')) columnIndices.exam = idx;
+
+                if (val === 'course code') columnIndices.code = idx;
+                else if (val === 'section num' || val === 'section number') columnIndices.section = idx;
+                else if (val === 'course name' || val === 'course title') columnIndices.name = idx;
+                else if (val === 'instructor') columnIndices.instructor = idx;
+                else if (val === 'day') columnIndices.day = idx;
+                else if (val === 'from time' || val === 'from') columnIndices.from = idx;
+                else if (val === 'to time' || (val === 'to' && idx !== columnIndices.instructor)) columnIndices.to = idx;
+                else if (val === 'hall' || val === 'room') columnIndices.room = idx;
+                else if (val.includes('exam date')) columnIndices.exam = idx;
             });
+
+            console.log(`  Headers found at row ${i}:`, columnIndices);
             break;
         }
     }
 
     if (headerRowIndex === -1) {
-        console.warn(`Could not find header row in ${path.basename(filePath)}`);
+        console.warn(`  Could not find header row in ${path.basename(filePath)}`);
         return [];
     }
 
@@ -110,7 +117,13 @@ function readExcelFile(filePath) {
         if (!row || row.length === 0) continue;
 
         const code = row[columnIndices.code];
-        if (!code || String(code).toLowerCase().includes('course code')) continue;
+        if (!code || String(code).toLowerCase().includes('course')) continue;
+
+        const section = String(row[columnIndices.section] || '').trim();
+        if (!section) {
+            console.warn(`  Row ${i}: Missing section for ${code}, skipping`);
+            continue;
+        }
 
         const day = String(row[columnIndices.day] || '').trim();
         const from = String(row[columnIndices.from] || '').trim();
@@ -120,7 +133,7 @@ function readExcelFile(filePath) {
         cleanedRows.push({
             code: String(code).trim(),
             name: String(row[columnIndices.name] || '').trim(),
-            section: String(row[columnIndices.section] || '').trim(),
+            section: section,
             instructor: String(row[columnIndices.instructor] || 'To Be Announced').trim(),
             time: timeStr,
             room: String(row[columnIndices.room] || '').trim(),
@@ -128,94 +141,109 @@ function readExcelFile(filePath) {
         });
     }
 
+    console.log(`  Extracted ${cleanedRows.length} rows`);
     return cleanedRows;
 }
 
-function mergeData(enRows, arRows, type) {
-    // Map Arabic rows by Code + Section for easy lookup
-    // Note: Sometimes section numbers might formatting diffs (01 vs 1). Just simple match for now.
-    const arMap = {};
-    arRows.forEach(row => {
-        const key = `${row.code}-${row.section}`; // Simple composite key
-        arMap[key] = row;
+function consolidateCourses(rawRows) {
+    // Step 1: Group by Course Code
+    const courseMap = {};
+
+    rawRows.forEach(row => {
+        const { code, name, section, instructor, time, room, exam } = row;
+
+        if (!courseMap[code]) {
+            courseMap[code] = {
+                id: code,
+                code: code,
+                name: name,
+                sections: {}
+            };
+        }
+
+        const course = courseMap[code];
+
+        // UNIQUE KEY: Just the section number (not instructor!)
+        const sectionKey = section;
+
+        if (!course.sections[sectionKey]) {
+            course.sections[sectionKey] = {
+                section: section,
+                instructor: instructor,
+                times: [],
+                room: room,
+                exam: exam
+            };
+        }
+
+        const sect = course.sections[sectionKey];
+
+        // Add time slot if not already present
+        if (time && !sect.times.includes(time)) {
+            sect.times.push(time);
+        }
+
+        // Merge room if different
+        if (room && !sect.room.includes(room)) {
+            sect.room = sect.room ? `${sect.room} / ${room}` : room;
+        }
     });
 
-    return enRows.map(enRow => {
-        const key = `${enRow.code}-${enRow.section}`;
-        const arRow = arMap[key];
+    // Step 2: Convert to final structure
+    return Object.values(courseMap).map(course => {
+        const sections = Object.values(course.sections).map(sect => ({
+            section: sect.section,
+            instructor: sect.instructor,
+            time: sect.times.join(' | '),
+            room: sect.room,
+            exam: sect.exam
+        }));
+
+        // Sort sections by section number
+        sections.sort((a, b) => {
+            const numA = parseInt(a.section) || 0;
+            const numB = parseInt(b.section) || 0;
+            return numA - numB;
+        });
 
         return {
-            ...enRow,
-            name_ar: arRow ? arRow.name : enRow.name, // Fallback to EN name if AR missing
-            instructor_ar: arRow ? arRow.instructor : enRow.instructor,
-            type: type
+            id: course.id,
+            code: course.code,
+            name: course.name,
+            sections: sections
         };
     });
 }
 
-function consolidateCourses(flatCourses) {
-    const coursesMap = {};
+function validateData(courses) {
+    console.log('\\n--- Data Validation ---');
 
-    flatCourses.forEach(row => {
-        const { code, name, name_ar, section, instructor, instructor_ar, time, room, exam, type } = row;
+    let issueCount = 0;
 
-        if (!coursesMap[code]) {
-            coursesMap[code] = {
-                id: code,
-                code: code,
-                name: name,
-                name_ar: name_ar || name,
-                type: type,
-                sectionsMap: {}
-            };
+    courses.forEach(course => {
+        const sectionNums = course.sections.map(s => s.section);
+        const uniqueSections = new Set(sectionNums);
+
+        if (uniqueSections.size !== sectionNums.length) {
+            console.warn(`WARNING: ${course.code} has duplicate section numbers!`);
+            issueCount++;
         }
 
-        const course = coursesMap[code];
-
-        // Ensure we capture Arabic name if we missed it in first row
-        if ((!course.name_ar || course.name_ar === course.name) && name_ar && name_ar !== name) {
-            course.name_ar = name_ar;
-        }
-
-        // Section consolidation (handling "TBA" appending same as before)
-        if (!course.sectionsMap[section]) {
-            course.sectionsMap[section] = {
-                section,
-                instructor,
-                instructor_ar: instructor_ar || instructor,
-                time,
-                room,
-                exam
-            };
-        } else {
-            const existing = course.sectionsMap[section];
-            if (time && !existing.time.includes(time)) existing.time += ` | ${time}`;
-            if (room && !existing.room.includes(room)) existing.room += ` / ${room}`;
-
-            // Merge Instructors (English)
-            if (instructor && !isTBA(instructor) && !existing.instructor.includes(instructor)) {
-                if (isTBA(existing.instructor)) existing.instructor = instructor;
-                else existing.instructor += ` & ${instructor}`;
+        course.sections.forEach(s => {
+            if (!s.time) {
+                console.warn(`WARNING: ${course.code} Section ${s.section} has no time!`);
+                issueCount++;
             }
-
-            // Merge Instructors (Arabic)
-            if (instructor_ar && !isTBA(instructor_ar) && !existing.instructor_ar.includes(instructor_ar)) {
-                if (isTBA(existing.instructor_ar)) existing.instructor_ar = instructor_ar;
-                else existing.instructor_ar += ` & ${instructor_ar}`;
-            }
-        }
+        });
     });
 
-    return Object.values(coursesMap).map(c => ({
-        ...c,
-        sections: Object.values(c.sectionsMap).sort((a, b) => parseInt(a.section) - parseInt(b.section))
-    }));
-}
+    if (issueCount === 0) {
+        console.log('✓ No issues found!');
+    } else {
+        console.log(`Found ${issueCount} potential issues.`);
+    }
 
-function isTBA(name) {
-    if (!name) return true;
-    const n = name.toUpperCase();
-    return n.includes('TO BE') || n.includes('ANNOUNCED') || n === '';
+    console.log('--- End Validation ---');
 }
 
 convertData();

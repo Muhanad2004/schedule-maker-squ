@@ -314,8 +314,10 @@ export default function ScheduleViewer({
                       <div key={dayIdx} className={`day-cell ${classes.length > 0 ? 'has-class' : ''}`}>
                         {classes.map((cls, clsIdx) => {
                           const color = COLORS[cls.colorIndex % COLORS.length];
-                          const roomLabel = cls.room === 'DLR' ? t.distanceLearning : cls.room;
-                          const instructorName = language === 'ar' ? (cls.instructor_ar || cls.instructor) : cls.instructor;
+                          // Room label: DLR for distance learning, actual room, or NA
+                          const roomLabel = cls.room === 'DLR'
+                            ? 'DLR'
+                            : (cls.room && cls.room.trim() ? cls.room : 'NA');
 
                           return (
                             <div
@@ -325,14 +327,13 @@ export default function ScheduleViewer({
                                 backgroundColor: color.bg,
                                 borderLeftColor: color.border
                               }}
-                              title={`${cls.code} - ${instructorName} | ${roomLabel}`}
+                              title={`${cls.code} - ${cls.instructor} | ${roomLabel}`}
                             >
                               <div className="block-code">{cls.code}/{cls.section}</div>
                               <div className="block-time" style={{ direction: 'ltr' }}>
-                                {formatTime(cls.start)} - {formatTime(cls.end)}
-                                {cls.room && <span style={{ opacity: 0.9 }}> | {roomLabel}</span>}
+                                {formatTime(cls.start)} - {formatTime(cls.end)} | {roomLabel}
                               </div>
-                              <div className="block-instructor">{instructorName}</div>
+                              <div className="block-instructor">{cls.instructor}</div>
                             </div>
                           );
                         })}
