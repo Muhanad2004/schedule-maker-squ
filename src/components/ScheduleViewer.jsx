@@ -1,4 +1,5 @@
 import React, { useMemo, useRef, useCallback, useState, useEffect } from 'react';
+import { useLanguage } from './LanguageContext';
 import { formatTime } from '../utils/timeUtils';
 import { jsPDF } from 'jspdf';
 
@@ -29,7 +30,9 @@ export default function ScheduleViewer({
   onNext,
   onPrev,
   t
+  t
 }) {
+  const { language } = useLanguage();
   const scheduleRef = useRef(null);
   const [examsExpanded, setExamsExpanded] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
@@ -313,6 +316,7 @@ export default function ScheduleViewer({
                         {classes.map((cls, clsIdx) => {
                           const color = COLORS[cls.colorIndex % COLORS.length];
                           const roomLabel = cls.room === 'DLR' ? t.distanceLearning : cls.room;
+                          const instructorName = language === 'ar' ? (cls.instructor_ar || cls.instructor) : cls.instructor;
 
                           return (
                             <div
@@ -322,14 +326,14 @@ export default function ScheduleViewer({
                                 backgroundColor: color.bg,
                                 borderLeftColor: color.border
                               }}
-                              title={`${cls.code} - ${cls.instructor} | ${roomLabel}`}
+                              title={`${cls.code} - ${instructorName} | ${roomLabel}`}
                             >
                               <div className="block-code">{cls.code}/{cls.section}</div>
                               <div className="block-time" style={{ direction: 'ltr' }}>
                                 {formatTime(cls.start)} - {formatTime(cls.end)}
                                 {cls.room && <span style={{ opacity: 0.9 }}> | {roomLabel}</span>}
                               </div>
-                              <div className="block-instructor">{cls.instructor}</div>
+                              <div className="block-instructor">{instructorName}</div>
                             </div>
                           );
                         })}

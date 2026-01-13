@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, memo } from 'react';
+import { useLanguage } from './LanguageContext';
 import { getInstructorScheduleSummary } from '../utils/timeUtils';
 
 export default function CourseSelector({
@@ -10,6 +11,7 @@ export default function CourseSelector({
   onClearAll,
   t
 }) {
+  const { language } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [activeTab, setActiveTab] = useState('all');
@@ -35,7 +37,8 @@ export default function CourseSelector({
     return courses.filter(c => {
       const code = c.code.toLowerCase();
       const name = c.name.toLowerCase();
-      return terms.every(term => code.includes(term) || name.includes(term));
+      const nameAr = (c.name_ar || '').toLowerCase();
+      return terms.every(term => code.includes(term) || name.includes(term) || nameAr.includes(term));
     });
   }, [courses, debouncedSearch]);
 
@@ -76,6 +79,7 @@ export default function CourseSelector({
             isSelected={isSelected}
             onToggle={onToggleCourse}
             t={t}
+            language={language}
           />
         ) : (
           <SelectedCourses
@@ -85,6 +89,7 @@ export default function CourseSelector({
             onToggleInstructor={onToggleInstructor}
             onClearAll={onClearAll}
             t={t}
+            language={language}
           />
         )}
       </div>
@@ -92,7 +97,7 @@ export default function CourseSelector({
   );
 }
 
-const SearchResults = memo(function SearchResults({ searchTerm, courses, isSelected, onToggle, t }) {
+const SearchResults = memo(function SearchResults({ searchTerm, courses, isSelected, onToggle, t, language }) {
   if (!searchTerm.trim()) {
     return <div className="empty-state">{t.emptySearchPrompt}</div>;
   }
@@ -108,8 +113,19 @@ const SearchResults = memo(function SearchResults({ searchTerm, courses, isSelec
           onClick={() => onToggle(course)}
         >
           <div className="course-info">
-            <div className="course-code">{course.code}</div>
-            <div className="course-name">{course.name}</div>
+            <div className="course-code">
+              {course.code}
+              {course.type && (
+                <span className={`course-type-pill ${course.type.toLowerCase()}`}>
+                  {language === 'ar'
+                    ? (course.type === 'UR' ? 'م.ج' : 'إ.ج')
+                    : course.type}
+                </span>
+              )}
+            </div>
+            <div className="course-name">
+              {language === 'ar' ? (course.name_ar || course.name) : course.name}
+            </div>
           </div>
           <span className="course-action">{isSelected(course.id) ? '✓' : '+'}</span>
         </div>
@@ -118,7 +134,7 @@ const SearchResults = memo(function SearchResults({ searchTerm, courses, isSelec
   );
 });
 
-function SelectedCourses({ courses, instructorFilters, onToggle, onToggleInstructor, onClearAll, t }) {
+function SelectedCourses({ courses, instructorFilters, onToggle, onToggleInstructor, onClearAll, t, language }) {
   if (courses.length === 0) {
     return <div className="empty-state">{t.noCoursesSelected}</div>;
   }
@@ -134,8 +150,10 @@ function SelectedCourses({ courses, instructorFilters, onToggle, onToggleInstruc
       {courses.map(course => {
         const instructorMap = {};
         course.sections.forEach(s => {
-          if (!instructorMap[s.instructor]) instructorMap[s.instructor] = [];
-          instructorMap[s.instructor].push(s);
+          // Use localized instructor name for grouping
+          const instName = language === 'ar' ? (s.instructor_ar || s.instructor) : s.instructor;
+          if (!instructorMap[instName]) instructorMap[instName] = [];
+          instructorMap[instName].push(s);
         });
         const instructors = Object.keys(instructorMap);
         const allowed = instructorFilters[course.id];
@@ -144,8 +162,19 @@ function SelectedCourses({ courses, instructorFilters, onToggle, onToggleInstruc
           <div key={course.id} className="selected-course-card">
             <div className="card-header">
               <div>
-                <div className="course-code">{course.code}</div>
-                <div className="course-name">{course.name}</div>
+                <div className="course-code">
+                  {course.code}
+                  {course.type && (
+                    <span className={`course-type-pill ${course.type.toLowerCase()}`}>
+                      {language === 'ar'
+                        ? (course.type === 'UR' ? 'م.ج' : 'إ.ج')
+                        : course.type}
+                    </span>
+                  )}
+                </div>
+                <div className="course-name">
+                  {language === 'ar' ? (course.name_ar || course.name) : course.name}
+                </div>
               </div>
               <button className="remove-btn" onClick={() => onToggle(course)}>✕</button>
             </div>
