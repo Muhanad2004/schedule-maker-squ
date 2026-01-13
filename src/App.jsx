@@ -46,6 +46,7 @@ function AppContent() {
   const [schedules, setSchedules] = useState([]);
   const [scheduleIndex, setScheduleIndex] = useState(0);
   const [generating, setGenerating] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
 
   // Load data on mount
   useEffect(() => {
@@ -212,7 +213,24 @@ function AppContent() {
       </header>
 
       <main className="app-main">
-        <aside className="sidebar">
+        {/* Mobile Sidebar Toggle */}
+        <div className="mobile-controls" onClick={() => setShowSidebar(true)}>
+          <div className="mobile-controls-content">
+            <span className="mobile-label">{t.manageCourses}</span>
+            <span className="mobile-count">{selectedCourses.length}</span>
+          </div>
+          <button className="mobile-edit-btn">
+            <img src="https://emojicdn.elk.sh/✏️?style=apple" alt="Edit" className="emoji-icon" />
+          </button>
+        </div>
+
+        <aside className={`sidebar ${showSidebar ? 'active' : ''}`}>
+          <div className="sidebar-mobile-header">
+            <h3>{t.manageCourses}</h3>
+            <button onClick={() => setShowSidebar(false)} className="close-sidebar-btn">
+              {t.close}
+            </button>
+          </div>
           <CourseSelector
             courses={allCourses}
             selectedCourses={selectedCourses}
@@ -230,6 +248,10 @@ function AppContent() {
             t={t}
           />
         </aside>
+
+        {showSidebar && (
+          <div className="sidebar-overlay" onClick={() => setShowSidebar(false)} />
+        )}
 
         <section className="main-content">
           <ScheduleViewer

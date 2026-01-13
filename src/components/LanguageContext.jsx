@@ -31,7 +31,9 @@ const translations = {
         welcomeMessage: 'Welcome! Search for courses on the left to get started.',
         dataUpdate: 'Data Last Update on 11th of January 2026',
         conflict: 'Conflict Found!',
-        multipleExamsOn: 'Multiple exams on'
+        multipleExamsOn: 'Multiple exams on',
+        manageCourses: 'Manage Courses',
+        close: 'Close'
     },
     ar: {
         searchPlaceholder: 'ابحث عن المقررات (مثال: COMP3000)...',
@@ -59,7 +61,9 @@ const translations = {
         welcomeMessage: 'مرحباً! ابدأ بالبحث عن المقررات في القائمة الجانبية.',
         dataUpdate: 'اخر تحديث للجداول: 11 يناير 2026',
         conflict: 'يوجد تعارض!',
-        multipleExamsOn: 'عدة اختبارات في'
+        multipleExamsOn: 'عدة اختبارات في',
+        manageCourses: 'إدارة المقررات',
+        close: 'إغلاق'
     }
 };
 
