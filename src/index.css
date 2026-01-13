@@ -1446,3 +1446,27 @@ input {
     transform: rotate(360deg);
   }
 }
+
+/* Schedule Viewer Layout (Empty State Centering) */
+.schedule-viewer {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 400px;
+}
+
+.schedule-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  padding: 2rem;
+  color: var(--text-dim);
+}
+
+.empty-icon img {
+  opacity: 0.7;
+}
