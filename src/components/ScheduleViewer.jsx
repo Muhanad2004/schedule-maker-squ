@@ -215,7 +215,7 @@ export default function ScheduleViewer({
       <div className="schedule-calendar">
         <div ref={scheduleRef} className="schedule-grid">
           {/* Header Row */}
-          <div className="grid-header time-header">Time/Day</div>
+          <div className="grid-header time-header">{t.timeDay}</div>
           {days.map((day, idx) => (
             <div key={idx} className="grid-header">{day}</div>
           ))}

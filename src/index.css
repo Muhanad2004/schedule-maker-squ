@@ -215,7 +215,7 @@ input {
 .app-main {
   flex: 1;
   display: grid;
-  grid-template-columns: 380px 1fr;
+  grid-template-columns: minmax(320px, 25%) 1fr;
   gap: 1.5rem;
   min-height: 0;
 }
@@ -594,7 +594,7 @@ input {
 /* Time Grid */
 .time-grid {
   display: grid;
-  grid-template-columns: 50px repeat(5, 1fr);
+  grid-template-columns: max-content repeat(5, 1fr);
   gap: 4px;
 }
 
@@ -949,7 +949,8 @@ input {
   }
 
   .schedule-grid {
-    min-width: 800px;
+    min-width: 100%;
+    width: max-content;
   }
 }
 
@@ -957,8 +958,7 @@ input {
 /* === Schedule Grid Layout === */
 .schedule-grid {
   display: grid;
-  grid-template-columns: 115px repeat(5, 1fr);
-  /* Increased to fit time text */
+  grid-template-columns: max-content repeat(5, 1fr);
   border: 1px solid var(--card-border);
   border-radius: 0 !important;
   overflow: hidden;
@@ -1186,11 +1186,68 @@ input {
 
   /* Adjust Time Grid (Filter Panel) for mobile */
   .time-grid {
-    grid-template-columns: 40px repeat(5, 1fr);
+    grid-template-columns: max-content repeat(5, 1fr);
   }
 
   .grid-time-label {
     font-size: 0.65rem;
     padding-right: 4px;
+  }
+}
+
+/* Desktop Polish: Scrollable Details Footer */
+@media (min-width: 900px) {
+
+  /* Allow the main content panel to scroll independently */
+  .main-content {
+    overflow-y: auto !important;
+    overflow-x: hidden;
+    display: block;
+    /* Switch to block to behave like a document */
+  }
+
+  /* Schedule Viewer fits content height */
+  .schedule-viewer {
+    height: auto;
+    min-height: 100%;
+    overflow: visible;
+  }
+
+  /* Calendar natural height */
+  .schedule-calendar {
+    flex: 0 0 auto;
+    min-height: 200px;
+    overflow: visible;
+    /* Let vertical overflow be handled by parent */
+  }
+
+  /* Footer sits at bottom or flows normally */
+  .schedule-footer {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    border-top: 1px solid var(--card-border);
+    background: var(--bg);
+    margin-top: auto;
+    /* Push to bottom if schedule is short */
+  }
+
+  .footer-toggle {
+    flex: none;
+    border-bottom: 1px solid var(--card-border);
+    background: var(--card);
+  }
+
+  .exam-details-container {
+    flex: none;
+    height: auto;
+    max-height: none;
+    /* UNLIMITED HEIGHT */
+    border-top: none;
+    overflow: visible;
+    /* NO SCROLL BAR */
+    background: var(--bg-soft);
+    padding: 1rem;
   }
 }

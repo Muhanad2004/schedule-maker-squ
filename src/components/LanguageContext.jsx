@@ -33,7 +33,8 @@ const translations = {
         conflict: 'Conflict Found!',
         multipleExamsOn: 'Multiple exams on',
         manageCourses: 'Manage Courses',
-        close: 'Close'
+        close: 'Close',
+        timeDay: 'Time/Day'
     },
     ar: {
         searchPlaceholder: 'ابحث عن المقررات (مثال: COMP3000)...',
@@ -63,7 +64,8 @@ const translations = {
         conflict: 'يوجد تعارض!',
         multipleExamsOn: 'عدة اختبارات في',
         manageCourses: 'إدارة المقررات',
-        close: 'إغلاق'
+        close: 'إغلاق',
+        timeDay: 'الوقت/اليوم'
     }
 };
 
