@@ -281,7 +281,7 @@ export default function ScheduleViewer({
               </span>
             )}
           </div>
-          <span>{examsExpanded ? '▼' : '▲'}</span>
+          <span>{examsExpanded ? '▲' : '▼'}</span>
         </div>
 
         {examsExpanded && (

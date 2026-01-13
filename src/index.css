@@ -957,8 +957,8 @@ input {
 /* === Schedule Grid Layout === */
 .schedule-grid {
   display: grid;
-  grid-template-columns: 80px repeat(5, 1fr);
-  /* Reduced time column width */
+  grid-template-columns: 115px repeat(5, 1fr);
+  /* Increased to fit time text */
   border: 1px solid var(--card-border);
   border-radius: 0 !important;
   overflow: hidden;
