@@ -5,26 +5,27 @@ A web application for generating conflict-free class schedules for SQU students.
 ## Features
 
 - **Schedule Generation**: Automatically finds all valid schedule combinations for your selected courses
-- **Time Filtering**: Block specific time slots you want to keep free
-- **Instructor Filtering**: Include or exclude specific instructors
-- **Course Search**: Search by course code or name
-- **Image Export**: Download your schedule as an image
+- **Smart Filtering**: Filter by specific instructors or block time slots directly
+- **Premium UI**: Modern, glass-morphic interface with vibrant pastel colors
+- **PDF Export**: Export single schedules or batch-export ALL possible schedules in a neat A5 layout
+- **Mobile & Tablet Optimized**: Smooth experience on all devices with adaptive layouts
 - **Bilingual**: Available in English and Arabic
 
 ## How to Use
 
 1. Search for a course using its code (e.g., `COMP3000`) or name
 2. Click on a course to add it to your selection
-3. (Optional) Use the Time Filters panel to block unwanted time slots
-4. (Optional) Click on instructor names to include/exclude them
-5. Click "Generate" to create all valid schedule combinations
-6. Use the navigation arrows to browse through different schedules
-7. Click the camera icon to save your schedule as an image
+3. (Optional) Filters:
+   - Click "Instructor Filtering" to pick/ban specific professors
+   - Use the "Time Filters" panel to block specific free times
+4. Click "Generate" to calculate conflicts and possibilities
+5. Browse through generated schedules
+6. Click "Export Schedule" for a single PDF or "Export All" to save every option found
 
 ## Built With
 
 - React + Vite
-- HTML2Canvas for image export
+- jsPDF & html2canvas for high-quality PDF generation
 
 ## Credits
 
@@ -39,26 +40,27 @@ Built by **Muhanad** with assistance from **AI (Gemini/Antigravity)**.
 ## المميزات
 
 - **إنشاء الجداول**: يجد تلقائياً جميع الجداول الممكنة للمقررات المختارة
-- **تصفية الأوقات**: حظر أوقات محددة تريد إبقاءها فارغة
-- **تصفية المدرسين**: تضمين أو استبعاد مدرسين محددين
-- **البحث عن المقررات**: البحث برمز المقرر أو اسمه
-- **تصدير كصورة**: حفظ الجدول كصورة
+- **تصفية ذكية**: تصفية حسب المدرسين أو حظر أوقات محددة
+- **واجهة عصرية**: تصميم زجاجي (Glassmorphism) مع ألوان زاهية وحديثة
+- **تصدير PDF**: حفظ جدول واحد أو جميع الجداول المحتملة في ملف PDF واحد بتنسيق A5 أنيق
+- **متوافق مع جميع الأجهزة**: تجربة سلسة على الهواتف، الأجهزة اللوحية، والحواسيب
 - **ثنائي اللغة**: متوفر بالعربية والإنجليزية
 
 ## طريقة الاستخدام
 
 1. ابحث عن المقرر باستخدام رمزه (مثال: `COMP3000`) أو اسمه
 2. اضغط على المقرر لإضافته إلى قائمتك
-3. (اختياري) استخدم لوحة تصفية الأوقات لحظر الأوقات غير المرغوبة
-4. (اختياري) اضغط على أسماء المدرسين لتضمينهم أو استبعادهم
-5. اضغط "إنشاء الجداول" لإنشاء جميع الجداول الممكنة
-6. استخدم الأسهم للتنقل بين الجداول المختلفة
-7. اضغط على أيقونة الكاميرا لحفظ الجدول كصورة
+3. (اختياري) المرشحات:
+   - اضغط على "تصفية المدرسين" لاختيار أو استبعاد أساتذة معينين
+   - استخدم لوحة "تصفية الأوقات" لحظر أوقات الفراغ المطلوبة
+4. اضغط "إنشاء الجداول" لحساب التعارضات والخيارات
+5. تصفح الجداول المقترحة
+6. اضغط "تصدير الجدول" لحفظ الجدول الحالي أو "تصدير الكل" لحفظ جميع الخيارات
 
 ## تم البناء باستخدام
 
 - React + Vite
-- HTML2Canvas لتصدير الصور
+- jsPDF & html2canvas لإنشاء ملفات PDF عالية الجودة
 
 ## الاعتمادات
 

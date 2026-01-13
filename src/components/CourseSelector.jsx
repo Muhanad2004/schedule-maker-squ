@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, memo } from 'react';
 import { getInstructorScheduleSummary } from '../utils/timeUtils';
 
 export default function CourseSelector({
@@ -72,7 +72,7 @@ export default function CourseSelector({
         {activeTab === 'all' ? (
           <SearchResults
             searchTerm={debouncedSearch}
-            courses={filteredCourses}
+            courses={filteredCourses.slice(0, 50)}
             isSelected={isSelected}
             onToggle={onToggleCourse}
             t={t}
@@ -92,7 +92,7 @@ export default function CourseSelector({
   );
 }
 
-function SearchResults({ searchTerm, courses, isSelected, onToggle, t }) {
+const SearchResults = memo(function SearchResults({ searchTerm, courses, isSelected, onToggle, t }) {
   if (!searchTerm.trim()) {
     return <div className="empty-state">{t.emptySearchPrompt}</div>;
   }
@@ -116,7 +116,7 @@ function SearchResults({ searchTerm, courses, isSelected, onToggle, t }) {
       ))}
     </div>
   );
-}
+});
 
 function SelectedCourses({ courses, instructorFilters, onToggle, onToggleInstructor, onClearAll, t }) {
   if (courses.length === 0) {

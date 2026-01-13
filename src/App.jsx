@@ -256,6 +256,7 @@ function AppContent() {
         <section className="main-content">
           <ScheduleViewer
             schedule={schedules[scheduleIndex]}
+            allSchedules={schedules}
             scheduleIndex={scheduleIndex}
             totalSchedules={schedules.length}
             onNext={() => setScheduleIndex(i => Math.min(schedules.length - 1, i + 1))}

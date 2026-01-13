@@ -34,7 +34,12 @@ const translations = {
         multipleExamsOn: 'Multiple exams on',
         manageCourses: 'Manage Courses',
         close: 'Close',
-        timeDay: 'Time/Day'
+        timeDay: 'Time/Day',
+        distanceLearning: 'Distance Learning',
+        exportSchedule: 'Export Schedule',
+        exportAll: 'Export All Schedules',
+        exporting: 'Exporting...',
+        classroom: 'Room'
     },
     ar: {
         searchPlaceholder: 'ابحث عن المقررات (مثال: COMP3000)...',
@@ -65,7 +70,12 @@ const translations = {
         multipleExamsOn: 'عدة اختبارات في',
         manageCourses: 'إدارة المقررات',
         close: 'إغلاق',
-        timeDay: 'الوقت/اليوم'
+        timeDay: 'الوقت/اليوم',
+        distanceLearning: 'التعلم عن بعد',
+        exportSchedule: 'تصدير هذا الجدول',
+        exportAll: 'تصدير جميع الجداول',
+        exporting: 'جاري التصدير...',
+        classroom: 'القاعة'
     }
 };
 

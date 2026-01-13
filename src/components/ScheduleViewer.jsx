@@ -1,15 +1,16 @@
-import React, { useMemo, useRef, useCallback, useState } from 'react';
+import React, { useMemo, useRef, useCallback, useState, useEffect } from 'react';
 import { formatTime } from '../utils/timeUtils';
+import { jsPDF } from 'jspdf';
 
 const COLORS = [
-  { bg: '#3b82f6', border: '#2563eb' },
-  { bg: '#10b981', border: '#059669' },
-  { bg: '#f59e0b', border: '#d97706' },
-  { bg: '#ef4444', border: '#dc2626' },
-  { bg: '#8b5cf6', border: '#7c3aed' },
-  { bg: '#ec4899', border: '#db2777' },
-  { bg: '#06b6d4', border: '#0891b2' },
-  { bg: '#84cc16', border: '#65a30d' },
+  { bg: '#60a5fa', border: '#3b82f6' }, // Blue
+  { bg: '#34d399', border: '#10b981' }, // Green
+  { bg: '#fbbf24', border: '#f59e0b' }, // Amber
+  { bg: '#f87171', border: '#ef4444' }, // Red
+  { bg: '#a78bfa', border: '#8b5cf6' }, // Purple
+  { bg: '#f472b6', border: '#ec4899' }, // Pink
+  { bg: '#22d3ee', border: '#06b6d4' }, // Cyan
+  { bg: '#a3e635', border: '#84cc16' }, // Lime
 ];
 
 const formatHour = (minutes) => {
@@ -22,6 +23,7 @@ const formatHour = (minutes) => {
 
 export default function ScheduleViewer({
   schedule,
+  allSchedules,
   scheduleIndex,
   totalSchedules,
   onNext,
@@ -30,61 +32,108 @@ export default function ScheduleViewer({
 }) {
   const scheduleRef = useRef(null);
   const [examsExpanded, setExamsExpanded] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportProgress, setExportProgress] = useState(0);
+  const [overrideSchedule, setOverrideSchedule] = useState(null);
 
-  const handleDownload = useCallback(async () => {
+  // Use the override schedule during batch export, otherwise proper prop
+  const displaySchedule = overrideSchedule || schedule;
+
+  const captureScheduleToPDF = async (doc, isFirstPage) => {
     if (!scheduleRef.current) return;
 
+    const html2canvas = (await import('html2canvas')).default;
+
+    // A5 Landscape dimensions in mm (210 x 148)
+    const PAGE_WIDTH = 210;
+    const PAGE_HEIGHT = 148;
+    const MARGIN = 10;
+
+    // Capture at ultra-high scale for sharpness (3x ~ 300 DPI)
+    const div = scheduleRef.current;
+    const canvas = await html2canvas(div, {
+      scale: 3,
+      backgroundColor: getComputedStyle(div).backgroundColor || '#ffffff',
+      useCORS: true
+    });
+
+    // Use JPEG with 0.72 quality - High Res + Medium Compression = Crisp text, low file size
+    const imgData = canvas.toDataURL('image/jpeg', 0.72);
+    const imgProps = doc.getImageProperties(imgData);
+
+    // Calculate fit (Fill Page Width or Height)
+    const availWidth = PAGE_WIDTH - (MARGIN * 2);
+    const availHeight = PAGE_HEIGHT - (MARGIN * 2);
+
+    const ratioX = availWidth / imgProps.width;
+    const ratioY = availHeight / imgProps.height;
+    const ratio = Math.min(ratioX, ratioY);
+
+    const pdfWidth = imgProps.width * ratio;
+    const pdfHeight = imgProps.height * ratio;
+
+    // Center content
+    const x = (PAGE_WIDTH - pdfWidth) / 2;
+    const y = (PAGE_HEIGHT - pdfHeight) / 2;
+
+    if (!isFirstPage) doc.addPage();
+
+    doc.addImage(imgData, 'JPEG', x, y, pdfWidth, pdfHeight);
+  };
+
+  /* Shared Wait Helper */
+  const waitForRender = () => new Promise(resolve => {
+    // Double RAF ensures paint has occurred
+    requestAnimationFrame(() => requestAnimationFrame(resolve));
+  });
+
+  const handleExportSingle = async () => {
+    setIsExporting(true);
+    // Wait for re-render so .exporting class applies and header shows
+    await waitForRender();
+
     try {
-      const html2canvas = (await import('html2canvas')).default;
-
-      const A4_LANDSCAPE_WIDTH = 1123;
-      const A4_LANDSCAPE_HEIGHT = 794;
-
-      const elementWidth = scheduleRef.current.offsetWidth;
-      const elementHeight = scheduleRef.current.offsetHeight;
-
-      const scaleX = A4_LANDSCAPE_WIDTH / elementWidth;
-      const scaleY = A4_LANDSCAPE_HEIGHT / elementHeight;
-      const scale = Math.min(scaleX, scaleY);
-
-      const computedStyle = getComputedStyle(scheduleRef.current);
-      const bgColor = computedStyle.backgroundColor || '#ffffff';
-
-      const canvas = await html2canvas(scheduleRef.current, {
-        backgroundColor: bgColor,
-        scale: scale,
-        width: elementWidth,
-        height: elementHeight
-      });
-
-      const finalCanvas = document.createElement('canvas');
-      finalCanvas.width = A4_LANDSCAPE_WIDTH;
-      finalCanvas.height = A4_LANDSCAPE_HEIGHT;
-      const ctx = finalCanvas.getContext('2d');
-
-      ctx.fillStyle = bgColor;
-      ctx.fillRect(0, 0, A4_LANDSCAPE_WIDTH, A4_LANDSCAPE_HEIGHT);
-
-      const offsetX = (A4_LANDSCAPE_WIDTH - canvas.width) / 2;
-      const offsetY = (A4_LANDSCAPE_HEIGHT - canvas.height) / 2;
-      ctx.drawImage(canvas, offsetX, offsetY);
-
-      const link = document.createElement('a');
-      link.download = `schedule-${scheduleIndex + 1}.png`;
-      link.href = finalCanvas.toDataURL();
-      link.click();
-    } catch (error) {
-      console.error('Download failed:', error);
+      const doc = new jsPDF('l', 'mm', 'a5');
+      await captureScheduleToPDF(doc, true);
+      doc.save(`Schedule_${scheduleIndex + 1}.pdf`);
+    } catch (err) {
+      console.error("Export failed", err);
     }
-  }, [scheduleIndex]);
+    setIsExporting(false);
+  };
+
+  const handleExportAll = async () => {
+    if (!allSchedules || allSchedules.length === 0) return;
+
+    setIsExporting(true);
+    setExportProgress(1);
+
+    try {
+      const doc = new jsPDF('l', 'mm', 'a5');
+
+      for (let i = 0; i < allSchedules.length; i++) {
+        setExportProgress(i + 1);
+        setOverrideSchedule(allSchedules[i]);
+        await waitForRender();
+        await captureScheduleToPDF(doc, i === 0);
+      }
+
+      doc.save('All_Schedules.pdf');
+    } catch (err) {
+      console.error("Batch export failed", err);
+    }
+
+    setOverrideSchedule(null);
+    setIsExporting(false);
+  };
 
   // Calculate unique time slots from all classes - sorted by start time, then duration (shorter first)
   const timeSlots = useMemo(() => {
-    if (!schedule) return [];
+    if (!displaySchedule) return [];
 
     const slots = new Set();
 
-    schedule.forEach(section => {
+    displaySchedule.forEach(section => {
       const parsedSlots = section.parsedSlots || [];
       parsedSlots.forEach(slot => {
         slots.add(`${slot.start}-${slot.end}`);
@@ -105,15 +154,15 @@ export default function ScheduleViewer({
     });
 
     return slotArray;
-  }, [schedule]);
+  }, [displaySchedule]);
 
   // Organize classes by day and time slot
   const gridData = useMemo(() => {
-    if (!schedule) return {};
+    if (!displaySchedule) return {};
 
     const data = {};
 
-    schedule.forEach((section, sectionIdx) => {
+    displaySchedule.forEach((section, sectionIdx) => {
       const parsedSlots = section.parsedSlots || [];
       parsedSlots.forEach(slot => {
         const slotKey = `${slot.start}-${slot.end}`;
@@ -135,14 +184,14 @@ export default function ScheduleViewer({
     });
 
     return data;
-  }, [schedule]);
+  }, [displaySchedule]);
 
   // Detect exam conflicts (2+ exams on same day)
   const examConflicts = useMemo(() => {
-    if (!schedule) return { count: 0, dates: [] };
+    if (!displaySchedule) return { count: 0, dates: [] };
 
     const examsByDate = {};
-    schedule.forEach(section => {
+    displaySchedule.forEach(section => {
       const examFull = section.exam;
       if (examFull && examFull !== 'TBA') {
         // Extract date part (e.g., "21/05/2026 THU")
@@ -171,11 +220,11 @@ export default function ScheduleViewer({
     });
 
     return { count: conflictDates.length, dates: conflictDates };
-  }, [schedule]);
+  }, [displaySchedule]);
 
   const days = t.days;
 
-  if (!schedule) {
+  if (!displaySchedule) {
     return (
       <div className="schedule-viewer">
         <div className="schedule-empty">
@@ -195,75 +244,102 @@ export default function ScheduleViewer({
 
   return (
     <div className="schedule-viewer">
+      {/* Overlay for Exporting */}
+      {isExporting && (
+        <div className="export-overlay">
+          <div className="export-spinner"></div>
+          <h3>{t.exporting}</h3>
+          {overrideSchedule && <p>{exportProgress} / {allSchedules.length}</p>}
+        </div>
+      )}
+
       {/* Header */}
       <div className="schedule-header">
         <h2>
-          {t.schedule} {scheduleIndex + 1}
+          {t.schedule} {(overrideSchedule ? exportProgress : scheduleIndex + 1)}
           <span className="text-dim"> {t.of} {totalSchedules}</span>
         </h2>
         <div className="schedule-controls">
-          <button className="nav-btn" onClick={onPrev} disabled={scheduleIndex === 0}>{prevIcon}</button>
-          <span className="schedule-counter">{scheduleIndex + 1} / {totalSchedules}</span>
-          <button className="nav-btn" onClick={onNext} disabled={scheduleIndex === totalSchedules - 1}>{nextIcon}</button>
-          <button className="icon-btn" onClick={handleDownload} title={t.saveImage}>
-            <img src="https://emojicdn.elk.sh/📷?style=apple" alt="Save" className="emoji-icon" />
-          </button>
+          <div className="nav-controls">
+            <button className="nav-btn" onClick={onPrev} disabled={scheduleIndex === 0}>{prevIcon}</button>
+            <span className="schedule-counter">{scheduleIndex + 1} / {totalSchedules}</span>
+            <button className="nav-btn" onClick={onNext} disabled={scheduleIndex === totalSchedules - 1}>{nextIcon}</button>
+          </div>
+
+          <div className="export-actions" style={{ display: 'flex', gap: '0.5rem' }}>
+            <button className="btn-secondary" onClick={handleExportSingle} title={t.exportSchedule} disabled={isExporting}>
+              📄 {t.exportSchedule}
+            </button>
+            <button className="btn-secondary" onClick={handleExportAll} title={t.exportAll} disabled={isExporting}>
+              📚 {t.exportAll}
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Grid Schedule */}
       <div className="schedule-calendar">
-        <div ref={scheduleRef} className="schedule-grid">
-          {/* Header Row */}
-          <div className="grid-header time-header">{t.timeDay}</div>
-          {days.map((day, idx) => (
-            <div key={idx} className="grid-header">{day}</div>
-          ))}
+        <div ref={scheduleRef} className={`schedule-print-wrapper ${isExporting ? 'exporting' : ''}`}>
+          <div className="print-header">
+            <div className="print-header-left">Schedule #{overrideSchedule ? exportProgress : scheduleIndex + 1}</div>
+            <div className="print-header-right">جدول رقم {overrideSchedule ? exportProgress : scheduleIndex + 1}</div>
+          </div>
 
-          {/* Time Slot Rows */}
-          {timeSlots.map(slot => {
-            const slotKey = slot.key;
-            const slotData = gridData[slotKey] || {};
+          <div className="schedule-grid">
+            {/* Header Row */}
+            <div className="grid-header time-header">{t.timeDay}</div>
+            {days.map((day, idx) => (
+              <div key={idx} className="grid-header">{day}</div>
+            ))}
 
-            return (
-              <React.Fragment key={slotKey}>
-                {/* Time Cell */}
-                <div className="time-cell">
-                  {formatHour(slot.start)} - {formatHour(slot.end)}
-                </div>
+            {/* Time Slot Rows */}
+            {timeSlots.map(slot => {
+              const slotKey = slot.key;
+              const slotData = gridData[slotKey] || {};
 
-                {/* Day Cells */}
-                {[0, 1, 2, 3, 4].map(dayIdx => {
-                  const classes = slotData[dayIdx] || [];
+              return (
+                <React.Fragment key={slotKey}>
+                  {/* Time Cell */}
+                  <div className="time-cell">
+                    {formatHour(slot.start)} - {formatHour(slot.end)}
+                  </div>
 
-                  return (
-                    <div key={dayIdx} className={`day-cell ${classes.length > 0 ? 'has-class' : ''}`}>
-                      {classes.map((cls, clsIdx) => {
-                        const color = COLORS[cls.colorIndex % COLORS.length];
-                        return (
-                          <div
-                            key={clsIdx}
-                            className="class-block"
-                            style={{
-                              backgroundColor: color.bg,
-                              borderLeftColor: color.border
-                            }}
-                            title={`${cls.code} - ${cls.instructor}`}
-                          >
-                            <div className="block-code">{cls.code}/{cls.section}</div>
-                            <div className="block-time" style={{ direction: 'ltr' }}>
-                              {formatTime(cls.start)} - {formatTime(cls.end)}
+                  {/* Day Cells */}
+                  {[0, 1, 2, 3, 4].map(dayIdx => {
+                    const classes = slotData[dayIdx] || [];
+
+                    return (
+                      <div key={dayIdx} className={`day-cell ${classes.length > 0 ? 'has-class' : ''}`}>
+                        {classes.map((cls, clsIdx) => {
+                          const color = COLORS[cls.colorIndex % COLORS.length];
+                          const roomLabel = cls.room === 'DLR' ? t.distanceLearning : cls.room;
+
+                          return (
+                            <div
+                              key={clsIdx}
+                              className="class-block"
+                              style={{
+                                backgroundColor: color.bg,
+                                borderLeftColor: color.border
+                              }}
+                              title={`${cls.code} - ${cls.instructor} | ${roomLabel}`}
+                            >
+                              <div className="block-code">{cls.code}/{cls.section}</div>
+                              <div className="block-time" style={{ direction: 'ltr' }}>
+                                {formatTime(cls.start)} - {formatTime(cls.end)}
+                                {cls.room && <span style={{ opacity: 0.9 }}> | {roomLabel}</span>}
+                              </div>
+                              <div className="block-instructor">{cls.instructor}</div>
                             </div>
-                            <div className="block-instructor">{cls.instructor}</div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  );
-                })}
-              </React.Fragment>
-            );
-          })}
+                          );
+                        })}
+                      </div>
+                    );
+                  })}
+                </React.Fragment>
+              );
+            })}
+          </div>
         </div>
       </div>
 
