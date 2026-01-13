@@ -42,6 +42,9 @@
   /* Glassmorphism */
   --blur: 12px;
 
+  --block-text: #000000;
+  /* Black text for light mode blocks */
+
   --font-main: 'Noto Sans', system-ui, sans-serif;
   --font-display: 'Noto Sans', system-ui, sans-serif;
 }
@@ -60,6 +63,8 @@
 
   --text: #f8fafc;
   --text-dim: #94a3b8;
+  --block-text: #ffffff;
+  /* White text for dark mode blocks */
 
   --primary: #3b82f6;
   --primary-hover: #60a5fa;
@@ -1053,7 +1058,8 @@ input {
   border-left: 4px solid rgba(0, 0, 0, 0.2);
   word-wrap: break-word;
   overflow-wrap: break-word;
-  color: white;
+  color: var(--block-text);
+  /* Theme-based text color */
   height: 100%;
   box-sizing: border-box;
   text-align: left;
